@@ -1,120 +1,254 @@
 <?php
-session_start();
-if(!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1){
-    header("Location: login.html");
-    exit();
-}
+declare(strict_types=1);
 
-include 'php/db.php';
+require_once __DIR__ . '/php/layout.php';
 
-// Approve property
-if(isset($_GET['approve_id'])){
-    $id = intval($_GET['approve_id']);
-    $sql = "UPDATE properties SET status='approved' WHERE id=$id";
-    mysqli_query($conn, $sql);
-    header("Location: admin_dashboard.php?success=Property approved!");
-    exit();
-}
+require_role('admin');
 
-// Reject property (delete)
-if(isset($_GET['reject_id'])){
-    $id = intval($_GET['reject_id']);
-    // First delete image from server
-    $res = mysqli_query($conn, "SELECT image FROM properties WHERE id=$id");
-    if(mysqli_num_rows($res)){
-        $row = mysqli_fetch_assoc($res);
-        @unlink("uploads/".$row['image']);
+if (is_post_request()) {
+    verify_csrf();
+
+    $action = post_string('action');
+
+    if ($action === 'property_status') {
+        $propertyId = post_int('property_id');
+        $status = post_string('status');
+
+        if ($propertyId > 0 && in_array($status, ['approved', 'rejected', 'pending'], true)) {
+            db_execute($conn, 'UPDATE properties SET status = ? WHERE id = ?', 'si', [$status, $propertyId]);
+            set_flash('success', 'Property status updated.');
+        }
     }
-    mysqli_query($conn, "DELETE FROM properties WHERE id=$id");
-    header("Location: admin_dashboard.php?success=Property rejected/deleted!");
-    exit();
+
+    if ($action === 'booking_status') {
+        $bookingId = post_int('booking_id');
+        $status = post_string('status');
+        $booking = db_one($conn, 'SELECT * FROM bookings WHERE id = ? LIMIT 1', 'i', [$bookingId]);
+
+        if ($booking && in_array($status, ['confirmed', 'cancelled'], true)) {
+            $payment = db_one($conn, 'SELECT id FROM payments WHERE booking_id = ? LIMIT 1', 'i', [$bookingId]);
+
+            if ($status === 'cancelled' && $payment) {
+                set_flash('error', 'Paid bookings should not be cancelled from the admin dashboard.');
+            } else {
+                db_execute($conn, 'UPDATE bookings SET status = ? WHERE id = ?', 'si', [$status, $bookingId]);
+
+                if ($status === 'confirmed') {
+                    db_execute($conn, "UPDATE properties SET status = 'booked' WHERE id = ?", 'i', [(int) $booking['property_id']]);
+                    db_execute(
+                        $conn,
+                        "UPDATE bookings SET status = 'cancelled' WHERE property_id = ? AND id <> ? AND status = 'pending'",
+                        'ii',
+                        [(int) $booking['property_id'], $bookingId]
+                    );
+                } else {
+                    db_execute($conn, "UPDATE properties SET status = 'approved' WHERE id = ?", 'i', [(int) $booking['property_id']]);
+                }
+
+                set_flash('success', 'Booking status updated.');
+            }
+        }
+    }
+
+    redirect('admin_dashboard.php');
 }
 
-// Fetch all pending properties
-$result = mysqli_query($conn, "SELECT p.*, u.email FROM properties p JOIN users u ON p.user_id=u.id WHERE status='pending' ORDER BY id DESC");
+$stats = [
+    'users' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM users') ?? 0),
+    'properties' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM properties') ?? 0),
+    'pending_properties' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM properties WHERE status = 'pending'") ?? 0),
+    'pending_bookings' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM bookings WHERE status = 'pending'") ?? 0),
+    'paid_payments' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM payments WHERE status = 'paid'") ?? 0),
+];
+
+$pendingProperties = db_all(
+    $conn,
+    "SELECT p.*, u.name AS owner_name, u.email AS owner_email
+     FROM properties p
+     LEFT JOIN users u ON u.id = p.user_id
+     WHERE p.status = 'pending'
+     ORDER BY p.created_at DESC, p.id DESC
+     LIMIT 8"
+);
+
+$pendingBookings = db_all(
+    $conn,
+    "SELECT b.*, p.title, p.city, p.location, u.name AS customer_name, u.email AS customer_email
+     FROM bookings b
+     INNER JOIN properties p ON p.id = b.property_id
+     INNER JOIN users u ON u.id = b.user_id
+     WHERE b.status = 'pending'
+     ORDER BY b.created_at DESC, b.id DESC
+     LIMIT 8"
+);
+
+$recentPayments = db_all(
+    $conn,
+    "SELECT pay.*, p.title, u.name AS customer_name
+     FROM payments pay
+     INNER JOIN bookings b ON b.id = pay.booking_id
+     INNER JOIN properties p ON p.id = b.property_id
+     INNER JOIN users u ON u.id = b.user_id
+     ORDER BY pay.payment_date DESC, pay.id DESC
+     LIMIT 8"
+);
+
+render_page_start('Admin Dashboard', 'Review pending approvals, booking requests, revenue records, and system health in one place.');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
-<style>
-body { font-family: Arial, sans-serif; background: #f4f7fb; margin:0; padding:0; }
-header { background: #007BFF; color: #fff; padding: 15px 30px; display:flex; justify-content:space-between; align-items:center; }
-header h1 { font-size:22px; }
-header a { color: #fff; text-decoration:none; font-weight:bold; }
+<section class="stats-grid stats-grid--wide">
+    <?php foreach ($stats as $label => $value) { ?>
+        <article class="stat-card">
+            <span class="stat-card__value"><?php echo h((string) $value); ?></span>
+            <span class="stat-card__label"><?php echo h(ucwords(str_replace('_', ' ', $label))); ?></span>
+        </article>
+    <?php } ?>
+</section>
 
-.container { padding:30px; max-width:1200px; margin:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
-.property-card { background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.1); position:relative; transition:0.2s; }
-.property-card:hover { transform:translateY(-5px); }
-.property-card img { width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px; }
-.property-card .info { padding:15px; }
-.property-card .info h3 { margin-bottom:10px; color:#333; }
-.property-card .info p { color:#555; font-size:14px; margin-bottom:5px; }
-.property-card .info span { font-weight:bold; color:#007BFF; }
-
-button { margin-top:5px; border:none; padding:6px 10px; border-radius:5px; cursor:pointer; font-size:12px; color:#fff; transition:0.3s; margin-right:5px; }
-.btn-approve { background:#28a745; }
-.btn-approve:hover { background:#218838; }
-.btn-reject { background:#dc3545; }
-.btn-reject:hover { background:#b02a37; }
-
-.toast { position: fixed; top: 20px; right: 20px; min-width: 200px; padding: 15px 20px; border-radius: 8px; color: #fff; font-weight: bold; display: none; z-index: 9999; opacity: 0; transition: opacity 0.5s, transform 0.5s; }
-.toast.show { display: block; opacity: 1; transform: translateY(0); }
-.toast.success { background: #28a745; }
-.toast.error { background: #dc3545; }
-</style>
-</head>
-<body>
-
-<header>
-  <h1>Admin Dashboard</h1>
-  <a href="logout.php">Logout</a>
-</header>
-
-<div id="toast" class="toast"></div>
-
-<div class="container">
-<?php
-if(mysqli_num_rows($result) > 0){
-    while($row = mysqli_fetch_assoc($result)){
-        ?>
-        <div class="property-card">
-            <img src="uploads/<?php echo $row['image']; ?>" alt="Property">
-            <div class="info">
-                <h3><?php echo htmlspecialchars($row['title']); ?></h3>
-                <p>Location: <?php echo htmlspecialchars($row['location']); ?></p>
-                <p>Price: <span>₹<?php echo htmlspecialchars($row['price']); ?></span></p>
-                <p>Uploaded by: <?php echo htmlspecialchars($row['email']); ?></p>
-                <button class="btn-approve" onclick="window.location.href='admin_dashboard.php?approve_id=<?php echo $row['id']; ?>'">Approve</button>
-                <button class="btn-reject" onclick="if(confirm('Are you sure?')) window.location.href='admin_dashboard.php?reject_id=<?php echo $row['id']; ?>'">Reject</button>
-            </div>
+<section class="section-panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">LISTING APPROVALS</p>
+            <h2>Pending Properties</h2>
         </div>
-        <?php
-    }
-} else {
-    echo '<p style="grid-column:1/-1;text-align:center;color:#555;">No pending properties.</p>';
-}
-?>
-</div>
+        <a class="btn btn--ghost" href="reports.php">Open Reports</a>
+    </div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const toast = document.getElementById("toast");
+    <?php if ($pendingProperties === []) { ?>
+        <?php render_empty_state('No pending properties', 'Agents have no listings waiting for approval right now.'); ?>
+    <?php } else { ?>
+        <div class="card-grid">
+            <?php foreach ($pendingProperties as $property) { ?>
+                <article class="card">
+                    <?php if (!empty($property['image'])) { ?>
+                        <img src="uploads/<?php echo h((string) $property['image']); ?>" alt="<?php echo h($property['title']); ?>">
+                    <?php } else { ?>
+                        <div class="card__placeholder">No image uploaded</div>
+                    <?php } ?>
+                    <div class="card__body">
+                        <div class="card__meta-row">
+                            <span class="badge badge--warning">Pending</span>
+                            <strong class="price-tag"><?php echo currency($property['price']); ?></strong>
+                        </div>
+                        <h3><?php echo h($property['title']); ?></h3>
+                        <p class="card__location"><?php echo h(trim(($property['city'] ? $property['city'] . ', ' : '') . $property['location'], ', ')); ?></p>
+                        <p class="card__support"><?php echo h($property['owner_name'] ?: 'Unknown Agent'); ?> &middot; <?php echo h($property['owner_email'] ?: 'No email'); ?></p>
 
-if(params.get("success")){
-    toast.textContent = params.get("success");
-    toast.className = "toast success show";
-    setTimeout(()=>{ toast.classList.remove("show"); },4000);
-}
-if(params.get("error")){
-    toast.textContent = params.get("error");
-    toast.className = "toast error show";
-    setTimeout(()=>{ toast.classList.remove("show"); },4000);
-}
-</script>
+                        <div class="card__actions">
+                            <form method="POST">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="action" value="property_status">
+                                <input type="hidden" name="property_id" value="<?php echo h((string) $property['id']); ?>">
+                                <input type="hidden" name="status" value="approved">
+                                <button class="btn btn--primary" type="submit">Approve</button>
+                            </form>
+                            <form method="POST">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="action" value="property_status">
+                                <input type="hidden" name="property_id" value="<?php echo h((string) $property['id']); ?>">
+                                <input type="hidden" name="status" value="rejected">
+                                <button class="btn btn--danger" type="submit">Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            <?php } ?>
+        </div>
+    <?php } ?>
+</section>
 
-</body>
-</html>
+<section class="section-panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">BOOKING REVIEWS</p>
+            <h2>Pending Booking Requests</h2>
+        </div>
+    </div>
+
+    <?php if ($pendingBookings === []) { ?>
+        <?php render_empty_state('No pending bookings', 'New customer requests will appear here for review.'); ?>
+    <?php } else { ?>
+        <div class="table-shell">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Property</th>
+                    <th>Visit Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($pendingBookings as $booking) { ?>
+                    <tr>
+                        <td><?php echo h($booking['customer_name']); ?><br><small><?php echo h($booking['customer_email']); ?></small></td>
+                        <td><?php echo h($booking['title']); ?><br><small><?php echo h(trim(($booking['city'] ? $booking['city'] . ', ' : '') . $booking['location'], ', ')); ?></small></td>
+                        <td><?php echo h(format_date((string) $booking['visit_date'])); ?></td>
+                        <td><span class="badge badge--warning">Pending</span></td>
+                        <td>
+                            <div class="inline-actions">
+                                <form method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="action" value="booking_status">
+                                    <input type="hidden" name="booking_id" value="<?php echo h((string) $booking['id']); ?>">
+                                    <input type="hidden" name="status" value="confirmed">
+                                    <button class="btn btn--primary" type="submit">Confirm</button>
+                                </form>
+                                <form method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="action" value="booking_status">
+                                    <input type="hidden" name="booking_id" value="<?php echo h((string) $booking['id']); ?>">
+                                    <input type="hidden" name="status" value="cancelled">
+                                    <button class="btn btn--danger" type="submit">Cancel</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } ?>
+</section>
+
+<section class="section-panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">PAYMENT LOG</p>
+            <h2>Recent Payments</h2>
+        </div>
+        <a class="btn btn--ghost" href="reports.php?export=payments">Export CSV</a>
+    </div>
+
+    <?php if ($recentPayments === []) { ?>
+        <?php render_empty_state('No payment records yet', 'Once customers complete payments, invoice records will appear here.'); ?>
+    <?php } else { ?>
+        <div class="table-shell">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Customer</th>
+                    <th>Property</th>
+                    <th>Amount</th>
+                    <th>Paid On</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($recentPayments as $payment) { ?>
+                    <tr>
+                        <td><?php echo h($payment['invoice_number']); ?></td>
+                        <td><?php echo h($payment['customer_name']); ?></td>
+                        <td><?php echo h($payment['title']); ?></td>
+                        <td><?php echo currency($payment['amount']); ?></td>
+                        <td><?php echo h(date('d M Y, h:i A', strtotime((string) $payment['payment_date']))); ?></td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } ?>
+</section>
+
+<?php render_page_end(); ?>

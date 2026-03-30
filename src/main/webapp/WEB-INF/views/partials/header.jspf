@@ -1,0 +1,55 @@
+<%@ page import="com.realestate.app.model.SessionUser" %>
+<%
+SessionUser currentUser = (SessionUser) request.getAttribute("currentUser");
+String flashType = (String) request.getAttribute("flashType");
+String flashMessage = (String) request.getAttribute("flashMessage");
+String csrfToken = (String) request.getAttribute("csrfToken");
+String servletPath = request.getServletPath();
+String contextPath = request.getContextPath();
+String pageTitle = (String) request.getAttribute("pageTitle");
+if (pageTitle == null || pageTitle.trim().isEmpty()) {
+    pageTitle = "Board Approved Real Estate System";
+}
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="<%= contextPath %>/assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="shell nav-shell">
+        <a class="brand" href="<%= contextPath %>/">
+            <span class="brand-mark">RE</span>
+            <span>
+                <strong>Real Estate System</strong>
+                <small>Board-approved Java edition</small>
+            </span>
+        </a>
+        <nav class="main-nav">
+            <a class="<%= "/".equals(servletPath) ? "active" : "" %>" href="<%= contextPath %>/">Home</a>
+            <a class="<%= servletPath.startsWith("/properties") ? "active" : "" %>" href="<%= contextPath %>/properties">Properties</a>
+            <% if (currentUser != null) { %>
+                <a class="<%= servletPath.startsWith("/bookings") ? "active" : "" %>" href="<%= contextPath %>/bookings">Bookings</a>
+                <a class="<%= servletPath.startsWith("/payments") ? "active" : "" %>" href="<%= contextPath %>/payments">Payments</a>
+                <a class="<%= "/dashboard".equals(servletPath) || "/profile".equals(servletPath) ? "active" : "" %>" href="<%= contextPath %>/dashboard">Dashboard</a>
+                <% if ("admin".equalsIgnoreCase(currentUser.getRole())) { %>
+                    <a class="<%= servletPath.startsWith("/admin") ? "active" : "" %>" href="<%= contextPath %>/admin">Admin</a>
+                <% } %>
+                <a href="<%= contextPath %>/logout">Logout</a>
+            <% } else { %>
+                <a class="<%= "/login".equals(servletPath) ? "active" : "" %>" href="<%= contextPath %>/login">Login</a>
+                <a class="<%= "/register".equals(servletPath) ? "active" : "" %>" href="<%= contextPath %>/register">Register</a>
+            <% } %>
+        </nav>
+    </div>
+</header>
+
+<main class="page-shell">
+    <div class="shell">
+        <% if (flashMessage != null && !flashMessage.trim().isEmpty()) { %>
+            <div class="flash <%= flashType %>"><%= flashMessage %></div>
+        <% } %>

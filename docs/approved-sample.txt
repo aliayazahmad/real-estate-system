@@ -1,0 +1,1778 @@
+
+
+===== PAGE 1 =====
+Event  Management  System  
+Table  of  Contents  
+1.  Introduction/Objectives  2.  System  Analysis  ○  Identification  of  Need  ○  Preliminary  Investigation  ○  Feasibility  Study  3.  Project  Planning  ○  Project  Scheduling  (PERT  Chart  and  Gantt  Chart)  4.  Software  Requirement  Specifications  (SRS)  5.  Software  Engineering  Paradigm  Applied  6.  System  Design  ○  Data  Models  (DFD,  ER  Diagrams,  etc.)  ○  Control  Flow  Diagrams  ○  Sequence  and  Use-Case  Diagrams  ○  Class  and  Activity  Diagrams  7.  Modularisation  Details  8.  Data  Integrity  and  Constraints  9.  Database  Design  ○  Procedural  Design/Object-Oriented  Design  ○  SQL  Commands  for  Database  Creation,  Data  Insertion,  and  Access  Rights  10.  User  Interface  Design  11.  Test  Cases  ●  Unit  Test  Cases  and  System  Test  Cases  12.  Coding  ●  Complete  Project  Coding  ●  Comments  and  Descriptions  ●  Standardization  and  Code  Efficiency  ●  Error  Handling  and  Validation  Checks  13.  Testing  ●  Testing  Techniques  and  Strategies  ●  Testing  Plan  and  Reports  ●  Debugging  and  Code  Improvement  14.  System  Security  Measures  ●  Database  Security  ●  User  Profiles  and  Access  Rights  15.  Cost  Estimation  of  the  Project  ●  Cost  Estimation  Model  16.  Reports  
+ 
+
+===== PAGE 2 =====
+ 
+●  Sample  Layouts  17.  Future  Scope  and  Enhancements  18.  Bibliography  19.  Appendices  (if  any)  20.  Glossary  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2  
+
+===== PAGE 3 =====
+ 
+1.  Introduction/Objectives  
+The  Event  Management  System  is  a  web-based  platform  designed  to  facilitate  event  planning,  
+management,
+ 
+and
+ 
+user
+ 
+registration.
+ 
+It
+ 
+allows
+ 
+users
+ 
+to
+ 
+browse
+ 
+and
+ 
+register
+ 
+for
+ 
+events
+ 
+while
+ 
+providing
+ 
+administrators
+ 
+with
+ 
+tools
+ 
+to
+ 
+create
+ 
+and
+ 
+manage
+ 
+events
+ 
+effectively.
+ 
+The
+ 
+system
+ 
+ensures
+ 
+secure
+ 
+authentication,
+ 
+role-based
+ 
+access
+ 
+control,
+ 
+and
+ 
+seamless
+ 
+integration
+ 
+with
+ 
+cloud
+ 
+services.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3  
+
+===== PAGE 4 =====
+ 
+2.  System  Analysis  
+Identification  of  Need  
+Organizing  and  managing  events  manually  is  time-consuming  and  prone  to  errors.  The  need  for  
+a
+ 
+digital
+ 
+solution
+ 
+arises
+ 
+due
+ 
+to:
+ 
+●  Inefficient  manual  processes  ●  Lack  of  centralized  event  tracking  ●  Difficulty  in  managing  participant  registrations  ●  Challenges  in  handling  event-related  notifications  
+Preliminary  Investigation  
+A  study  was  conducted  on  existing  event  management  solutions  to  identify  gaps.  Key  
+observations
+ 
+included:
+ 
+●  Most  systems  lack  real-time  updates  ●  Poor  user  experience  due  to  complex  interfaces  ●  Limited  role-based  access  control  for  different  users  
+Feasibility  Study  
+The  feasibility  study  analyzed  the  project's  viability  in  terms  of:  
+●  Technical  Feasibility:  The  system  is  developed  using  .NET  Core  (backend),  React  
+(frontend),
+ 
+and
+ 
+SQL
+ 
+Server
+ 
+(database),
+ 
+making
+ 
+it
+ 
+feasible
+ 
+for
+ 
+deployment.
+ ●  Economic  Feasibility:  The  project  is  cost-effective  due  to  the  use  of  open-source  tools  
+and
+ 
+AWS
+ 
+cloud
+ 
+services
+ 
+for
+ 
+scalability.
+ ●  Operational  Feasibility:  The  system  simplifies  event  creation  and  management,  
+improving
+ 
+efficiency
+ 
+and
+ 
+reducing
+ 
+workload
+ 
+for
+ 
+administrators.
+ 
+ 
+ 
+ 
+ 
+4  
+
+===== PAGE 5 =====
+ 
+3.  Project  Planning  
+A  structured  approach  was  adopted  to  ensure  timely  completion.  The  project  plan  consists  of:  
+●  Milestone-based  Development :  Dividing  tasks  into  manageable  sprints.  ●  Risk  Assessment :  Identifying  potential  issues  and  mitigation  strategies.  
+Project  Scheduling  
+Both  PERT  Chart  and  Gantt  Chart  were  created  to  visualize  the  development  timeline.  
+ 
+ 
+ 
+ 
+5  
+
+
+===== PAGE 6 =====
+ 
+4.  Software  Requirement  Specifications  (SRS)  
+Functional  Requirements:  
+●  User  authentication  &  authorization  ●  Event  creation,  modification,  and  deletion  ●  User  registration  and  notifications  ●  Role-based  access  control  
+Non-Functional  Requirements:  
+●  High  availability  and  scalability  ●  Secure  API  endpoints  with  JWT  authentication  ●  Intuitive  user  interface  
+5.  Software  Engineering  Paradigm  Applied  
+The  Agile  Development  Methodology  was  chosen  due  to  its  iterative  nature,  ensuring  
+flexibility
+ 
+and
+ 
+continuous
+ 
+improvements
+ 
+based
+ 
+on
+ 
+feedback.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+6  
+
+===== PAGE 7 =====
+ 
+6.  System  Design  
+Data  Flow  Diagram  (DFD):   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+7  
+
+
+===== PAGE 8 =====
+ 
+Entity  Relationship  Model  (ERD):  
+ 
+ 
+ 
+ 
+ 
+ 
+8  
+
+
+===== PAGE 9 =====
+ 
+Class  Diagrams:  
+ 
+ 
+ 
+ 
+9  
+
+
+===== PAGE 10 =====
+ 
+7.  Modularisation  Details  
+The  system  is  divided  into:  
+●  Frontend  Module:  React-based  UI  components  and  pages.  
+Project  Structure:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+10  
+
+
+===== PAGE 11 =====
+ 
+Components:  
+ 
+ 
+ 
+ 
+ 
+11  
+
+
+===== PAGE 12 =====
+ 
+Pages:  
+ 
+ 
+●  Backend  Module:  .NET  Core  API  for  business  logic  with  Entity  Framework  for  db  
+operations
+ 
+with
+ 
+the
+ 
+db
+ 
+migrations
+ 
+scripts.
+ 
+Serilog
+ 
+with
+ 
+File
+ 
+sink
+ 
+is
+ 
+used
+ 
+for
+ 
+logging
+ 
+purposes.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+12  
+
+
+===== PAGE 13 =====
+ 
+Project  Structure:  
+ 
+ 
+13  
+
+
+===== PAGE 14 =====
+ 
+Controllers:  
+ 
+ 
+DTOs:  
+ 
+ 
+Models:  
+ 
+14  
+
+
+===== PAGE 15 =====
+ 
+Services:  
+ 
+ 
+ 
+●  Database  Module:  SQL  Server  for  data  storage.  ●  Github:  As  a  code  repostiory  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+15  
+
+
+===== PAGE 16 =====
+ 
+8.  Data  Integrity  and  Constraints  
+●  Primary  Keys  &  Foreign  Keys  to  ensure  relational  integrity.  ○  Users :  UserId(int)  PK  ○  RSVPs :  RSVPId(int)  PK,  EventId(int)  FK(Events),  UserId(int)  FK(Users)  ○  Notifications:  NotId(int)  PK,  EventId(int)  FK(Events),  UserId(int)  FK(Users)  ○  Events:  EventId(int)  PK,  OrganizerId(int)  FK(Users)  ○  EventCategory:  EventCategoryId(int)  PK,  CategoryId(int)  FK(Categories),  
+EventId(int)
+ 
+FK(Events)
+ ○  Categories:  CategoryId(int)  PK  ○  AuditsLogs:  AuditLogId(int)  PK,  AdminId(int)  FK(Users)  
+ ●  Validation  Rules  to  prevent  inconsistent  data  entry.  ○  Every  primary  key  is  identity  starting  with  1  keeping  the  unique  check  of  the  value  
+for
+ 
+each
+ 
+entry.
+ ○  All  the  tables  are  normalized  to  max  to  keep  data  integrity  and  prevent  
+inconsistencies.
+ ●  Access  Rights  restrict  unauthorized  modifications.  ○  Use  of  JWT  to  keep  all  the  actions/URL  of  api  authorization  restricted.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+16  
+
+===== PAGE 17 =====
+ 
+9.  Database  Design  
+A  well-structured  schema  includes:  
+●  Users  Table :  Stores  user  details.  
+ 
+●  Events  Table :  Manages  event  data.  
+ 
+ 
+ 
+ 
+17  
+
+
+===== PAGE 18 =====
+ 
+●  Audits  Table :  Tracks  user  event  participation.  
+ 
+ 
+●  Notifications  Table :  Handles  system  alerts.  
+ 
+Communication  with  SQL  Server  DB  is  done  using  .net  core’s  ORM,  Entity  Framework  (v  9.0.1).  
+Using
+ 
+it,
+ 
+and
+ 
+the
+ 
+data
+ 
+migration
+ 
+utility
+ 
+within
+ 
+it,
+ 
+we
+ 
+have
+ 
+been
+ 
+able
+ 
+to
+ 
+perform
+ 
+these
+ 
+operations
+ 
+from
+ 
+the
+ 
+code
+ 
+without
+ 
+having
+ 
+to
+ 
+write
+ 
+any
+ 
+complex
+ 
+db
+ 
+functions
+ 
+or
+ 
+SPs:-
+ 
+●  Database  Creation  ●  User  Role  Assignments  ●  Data  Insertion  
+ 
+ 
+18  
+
+
+===== PAGE 19 =====
+ 
+10.  User  Interface  Design  
+A  responsive  UI  with  a  modern  design  ensures:  
+●  Easy  navigation  ●  Consistent  theme  
+Log  In:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+19  
+
+
+===== PAGE 20 =====
+ 
+Signup:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+20  
+
+
+===== PAGE 21 =====
+ 
+Forgot  Password:  
+ 
+ 
+Admin_AdminDashboard:  
+ 
+21  
+
+
+===== PAGE 22 =====
+ 
+Admin_Dashboard:  
+ 
+ 
+Organizer_CreateEvent:  
+ 
+ 
+22  
+
+
+===== PAGE 23 =====
+ 
+Organizer_Dashboard:  
+ 
+ 
+Participant_Dashboard:  
+ 
+ 
+23  
+
+
+===== PAGE 24 =====
+ 
+11.  Test  Cases  
+Unit  Tests:  Individual  components  are  tested  for  backend  code  using  xUnit  framework.  
+ 
+ 
+ 
+24  
+
+
+===== PAGE 25 =====
+ 
+ 
+ 
+25  
+
+
+===== PAGE 26 =====
+ 
+ 
+ 
+26  
+
+
+===== PAGE 27 =====
+ 
+ 
+ 
+27  
+
+
+===== PAGE 28 =====
+ 
+ 
+ 
+28  
+
+
+===== PAGE 29 =====
+ 
+  
+.
+ 
+System
+ 
+Tests:
+ 
+End-to-end
+ 
+testing
+ 
+is
+ 
+performed
+ 
+manually
+ 
+using
+ 
+Postman.
+ 
+ 
+ 
+ 
+ 
+ 
+29  
+
+
+===== PAGE 30 =====
+ 
+12.  Coding  
+The  project  follows  best  practices ,  including:  
+●  Modular  code  structure  ●  Error  handling  mechanisms  using  middleware  component  ●  Performance  optimizations  
+Backend  
+CreateEvent  action  of  the  EventController:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+30  
+
+
+===== PAGE 31 =====
+ 
+GetEvent  of  EventController:  
+ 
+ 
+Login  of  AuthController:  
+ 
+31  
+
+
+===== PAGE 32 =====
+ 
+Register  of  AuthController:  
+ 
+ 
+32  
+
+
+===== PAGE 33 =====
+ 
+ForgotPassword  of  AuthController:  
+ 
+ 
+33  
+
+
+===== PAGE 34 =====
+ 
+ResetPassword  of  AuthController:  
+ 
+ 
+34  
+
+
+===== PAGE 35 =====
+ 
+To  create  JWT:  
+ 
+ 
+35  
+
+
+===== PAGE 36 =====
+ 
+AppDBContext  for  setting  up  and  talking  with  the  DB  using  EntityFramework  (our  
+ORM
+ 
+framework):
+ 
+ 
+ 
+ 
+ 
+ 
+36  
+
+
+===== PAGE 37 =====
+ 
+DTO  for  creating  Event:  
+ 
+ 
+Dto  to  log  into  the  system:  
+ 
+ 
+37  
+
+
+===== PAGE 38 =====
+ 
+DTO  to  register  a  new  user:  
+ 
+ 
+DTO  that’s  used  as  a  common  response  for  all  the  endpoints  of  the  API:  
+ 
+38  
+
+
+===== PAGE 39 =====
+ 
+ExceptionMiddleware  that’s  used  as  a  common  point  for  handling  exception  in  
+the
+ 
+backend
+ 
+code:
+ 
+ 
+ 
+Twilio  Email  service  for  sending  event  updates  to  admins,  organizers  and  
+participants:
+ 
+ 
+ 
+ 
+39  
+
+
+===== PAGE 40 =====
+ 
+Frontend  
+Sig  In:  
+ 
+40  
+
+
+===== PAGE 41 =====
+ 
+ 
+ 
+41  
+
+
+===== PAGE 42 =====
+ 
+Forgot  Password:  
+ 
+42  
+
+
+===== PAGE 43 =====
+ 
+ 
+ 
+ 
+ 
+43  
+
+
+===== PAGE 44 =====
+ 
+Sign  Up:  
+ 
+44  
+
+
+===== PAGE 45 =====
+ 
+ 
+45  
+
+
+===== PAGE 46 =====
+ 
+ 
+46  
+
+
+===== PAGE 47 =====
+ 
+ 
+ 
+47  
+
+
+===== PAGE 48 =====
+ 
+Admin’s  Admin  Dashboard:  
+ 
+48  
+
+
+===== PAGE 49 =====
+ 
+ 
+49  
+
+
+===== PAGE 50 =====
+ 
+ 
+ 
+50  
+
+
+===== PAGE 51 =====
+ 
+Dashboard  for  Admin:  
+ 
+51  
+
+
+===== PAGE 52 =====
+ 
+ 
+52  
+
+
+===== PAGE 53 =====
+ 
+ 
+ 
+Create  Event  form  for  organizers:  
+53  
+
+
+===== PAGE 54 =====
+ 
+ 
+54  
+
+
+===== PAGE 55 =====
+ 
+ 
+55  
+
+
+===== PAGE 56 =====
+ 
+ 
+56  
+
+
+===== PAGE 57 =====
+ 
+ 
+ 
+Organizer  Dashboard:  
+57  
+
+
+===== PAGE 58 =====
+ 
+ 
+58  
+
+
+===== PAGE 59 =====
+ 
+ 
+ 
+Participant’s  Dashboard:  
+59  
+
+
+===== PAGE 60 =====
+ 
+ 
+60  
+
+
+===== PAGE 61 =====
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+61  
+
+
+===== PAGE 62 =====
+ 
+13.  System  Security  Measures  
+●  JWT  Authentication  for  API  security.  
+Why?  
+●  Ensures  secure  communication  between  the  front-end  (React)  and  back-end  
+APIs.
+ ●  Prevents  unauthorized  access  to  protected  routes.  ●  Reduces  risk  of  session  hijacking  compared  to  traditional  session-based  
+authentication.
+ 
+Implementation  in  Our  System:  
+●  When  a  user  (Organizer  or  Participant)  logs  in,  the  backend  generates  a  JWT  
+(JSON
+ 
+Web
+ 
+Token)
+ 
+and
+ 
+sends
+ 
+it
+ 
+to
+ 
+the
+ 
+front-end.
+ ●  The  front-end  stores  the  JWT  securely  in  HTTP-only  cookies  or  local  storage  
+(with
+ 
+added
+ 
+security).
+ ●  Every  API  request  from  the  front-end  includes  the  JWT  in  the  Authorization  
+header
+ 
+(Bearer
+ 
+Token)
+ 
+for
+ 
+authentication.
+ ●  The  backend  verifies  the  token  using  a  secret  key  before  granting  access  to  
+protected
+ 
+resources.
+ 
+ ●  Role-based  access  control .  
+Why?  
+●  Ensures  users  can  only  access  functionalities  relevant  to  their  role  (Organizer  
+or
+ 
+Participant).
+ ●  Prevents  unauthorized  users  from  performing  restricted  actions  (e.g.,  a  
+Participant
+ 
+creating
+ 
+events).
+ 
+Implementation  in  Our  System:  
+●  Define  roles  in  the  database  (Organizer,  Participant,  Admin).  ●  When  generating  JWTs,  embed  role  information  inside  the  token.  ●  Implement  middleware  on  the  backend  that  checks  roles  before  granting  
+access
+ 
+to
+ 
+API
+ 
+endpoints.
+ ●  Front-end  components  (React)  conditionally  render  UI  elements  based  on  user  
+roles
+ 
+(e.g.,
+ 
+only
+ 
+Organizers
+ 
+see
+ 
+"Create
+ 
+Event"
+ 
+button).
+ 
+Example:  
+●  Participant  Role:  Can  view  &  RSVP  to  events  but  cannot  manage  or  create  
+events
+.
+ 
+62  
+
+===== PAGE 63 =====
+ 
+●  Organizer  Role:  Can  create,  edit,  and  manage  events  but  cannot  RSVP .  ●  Admin  Role:  Can  manage  users  &  monitor  system  activities .  
+14.  Cost  Estimation  
+Cost  is  estimated  based  on:  
+●  Development  Effort  
+Factors  Considered:  
+●  Tech  Stack:  ○  Backend:  .NET  Core  (C#)  ○  Frontend:  React.js  ○  Database:  Microsoft  SQL  Server  ●  Development  Stages:  ○  Backend  API  Development:  Authentication  (JWT),  Event  CRUD  
+operations,
+ 
+Role-based
+ 
+access
+ ○  Frontend  Web  App:  UI  components,  API  integration,  state  
+management
+ ○  Testing  &  Bug  Fixing  
+Estimated  Cost:  
+●  Since  only  one  resource  is  working  on  this,  and  all  tech  and  tools  are  open  
+source
+ 
+and
+ 
+free,
+ 
+it
+ 
+has
+ 
+not
+ 
+incurred
+ 
+any
+ 
+cost
+ 
+for
+ 
+us.
+ 
+But
+ 
+if
+ 
+we
+ 
+ideally
+ 
+consider
+ 
+the
+ 
+cost
+ 
+for
+ 
+development,
+ 
+the
+ 
+cost
+ 
+depends
+ 
+on
+ 
+the
+ 
+hourly
+ 
+rate
+ 
+of
+ 
+the
+ 
+developer.
+ ●  Assuming  a  mid-level  developer  with  an  hourly  rate  of  $40/hour  and  an  
+estimated
+ 
+effort
+ 
+of
+ 
+200-250
+ 
+hours,
+ 
+the
+ 
+development
+ 
+cost
+ 
+is:
+ 
+ 
+$8,000
+ 
+-
+ 
+$10,000
+ 
+ 
+●  Cloud  Hosting  &  Storage  
+Current  Cloud  Usage:  
+●  Hosting:  AWS  EC2  or  AWS  Elastic  Beanstalk  ●  Database:  Amazon  RDS  (MS  SQL  Server)  ●  Storage:  AWS  S3  (if  storing  images/files)  ●  Networking  &  API  Gateway:  AWS  API  Gateway  &  Load  Balancer  
+ 
+63  
+
+===== PAGE 64 =====
+ 
+ 
+ 
+Using  AWS  Free  Tier  can  further  reduce  initial  costs.  
+ 
+●  Maintenance  &  Support  ●  No  cost  currently,  since  the  system  is  not  live  yet.  ●  Once  live,  maintenance  will  include:  ○  Bug  fixes  &  feature  updates  ○  Performance  monitoring  &  server  scaling  ○  Security  updates  &  database  optimizations  
+Estimated  future  cost  (if  hiring  a  part-time  developer  for  maintenance):  
+ 
+$500
+ 
+-
+ 
+$1,500/month,
+ 
+depending
+ 
+on
+ 
+workload
+ 
+&
+ 
+support
+ 
+requirements.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+64  
+
+
+===== PAGE 65 =====
+ 
+15.  Future  Scope  
+Enhancements  include:  
+●  AI-powered  event  recommendations  ●  Integration  with  third-party  services  ●  Real-time  event  analytics  ●  Mobile  app  support  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+65  
+
+===== PAGE 66 =====
+ 
+16.  Bibliography  &  References  
+1.  Backend  Development  (API)  
+●  Microsoft  .NET  Core  ○  Microsoft.  (2024).  ASP.NET  Core  Documentation .  Retrieved  from https://learn.microsoft.com/en-us/aspnet/core ●  JWT  Authentication  ○  Auth0.  (2024).  JWT  Handbook  &  Implementation  Guide .  Retrieved  from  
+https://jwt.io/introduction/
+ ●  Role-Based  Access  Control  (RBAC)  in  .NET  ○  Microsoft.  (2024).  Implementing  Authorization  in  ASP.NET  Core .  Retrieved  from https://learn.microsoft.com/en-us/aspnet/core/security/authorization ●  Microsoft  SQL  Server  ○  Microsoft.  (2024).  SQL  Server  Documentation .  Retrieved  from https://learn.microsoft.com/en-us/sql/sql-server 
+ 
+2.  Frontend  Development  (Web  App)  
+●  React.js  Framework  ○  Meta  (Facebook).  (2024).  React.js  Documentation .  Retrieved  from https://react.dev ●  UI  Components  &  Styling  ○  Tailwind  CSS.  (2024).  Tailwind  CSS  Documentation .  Retrieved  from https://tailwindcss.com/docs ●  State  Management  (Context  API  /  Redux)  ○  Redux  Team.  (2024).  Redux  Documentation .  Retrieved  from  
+https://redux.js.org
+ 
+ 
+3.  Cloud  Hosting  &  Infrastructure  
+●  Amazon  Web  Services  (AWS)  ○  AWS.  (2024).  AWS  Documentation .  Retrieved  from https://docs.aws.amazon.com/ ●  AWS  Secrets  Manager  (Secure  Credential  Storage)  ○  AWS.  (2024).  AWS  Secrets  Manager  Guide .  Retrieved  from https://docs.aws.amazon.com/secretsmanager/ ●  Hosting  on  AWS  (EC2,  RDS,  S3)  
+66  
+
+===== PAGE 67 =====
+ 
+○  AWS.  (2024).  EC2  User  Guide .  Retrieved  from https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ ○  AWS.  (2024).  RDS  for  SQL  Server  Documentation .  Retrieved  from https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerInstance.html 
+ 
+4.  Security  &  Authentication  
+●  OAuth  2.0  &  OpenID  Connect  ○  OpenID  Foundation.  (2024).  OAuth  2.0  and  OpenID  Connect  
+Specifications
+.
+ 
+Retrieved
+ 
+from
+ 
+https://openid.net/specs/
+ ●  Best  Practices  for  Secure  Web  Applications  ○  OWASP  Foundation.  (2024).  OWASP  Top  Ten  Security  Risks .  Retrieved  
+from
+ 
+https://owasp.org/www-project-top-ten/
+ 
+ 
+5.  Software  Development  &  Project  Management  
+●  Agile  Development  Process  ○  Beck,  K.,  &  Cockburn,  A.  (2001).  Agile  Software  Development:  The  
+People
+ 
+Factor
+.
+ 
+IEEE
+ 
+Computer,
+ 
+34(11),
+ 
+26-32.
+ ●  GitHub  for  Version  Control  ○  GitHub.  (2024).  GitHub  Documentation  &  Guides .  Retrieved  from https://docs.github.com/ ●  Continuous  Integration  &  Deployment  (CI/CD)  ○  GitHub  Actions.  (2024).  GitHub  Actions  Documentation .  Retrieved  from https://docs.github.com/en/actions 
+ 
+6.  Cost  Estimation  &  Infrastructure  Management  
+●  Estimating  Cloud  Costs  on  AWS  ○  AWS  Pricing  Calculator.  (2024).  AWS  Cost  Estimation  Tool .  Retrieved  from https://calculator.aws/ ●  Best  Practices  for  Cost  Optimization  ○  AWS  Well-Architected  Framework.  (2024).  Cost  Optimization  Pillar .  Retrieved  from https://aws.amazon.com/architecture/well-architected/ 
+ 
+67  
+
+===== PAGE 68 =====
+ 
+17.  Appendices  
+Appendix  A:  Project  Overview  
+The  Event  Management  System  is  a  web-based  application  designed  to  facilitate  
+event
+ 
+organization
+ 
+and
+ 
+participation.
+ 
+It
+ 
+allows
+ 
+organizers
+ 
+to
+ 
+create,
+ 
+manage,
+ 
+and
+ 
+track
+ 
+events,
+ 
+while
+ 
+participants
+ 
+can
+ 
+register,
+ 
+RSVP,
+ 
+and
+ 
+engage
+ 
+with
+ 
+event
+ 
+details.
+ 
+Key  Features:  
+●  User  Authentication  &  Authorization:  Secure  login  using  JWT  authentication  
+with
+ 
+role-based
+ 
+access
+ 
+control
+ 
+(RBAC)
+.
+ ●  Event  Management:  Organizers  can  create,  edit,  and  delete  events,  with  
+participants
+ 
+able
+ 
+to
+ 
+RSVP.
+ ●  Dashboard  Interface:  Different  views  for  Organizers  and  Participants .  ●  Cloud  Deployment:  Hosted  on  AWS  with  secure  AWS  Secrets  Manager  for  
+credential
+ 
+storage.
+ 
+ 
+Appendix  B:  Technology  Stack  
+1.  Backend  API  
+●  Framework:  .NET  Core  with  C#  ●  Authentication:  JWT-based  security  ●  Database:  Microsoft  SQL  Server  ●  Hosting:  AWS  (EC2  &  RDS  for  SQL  Server)  ●  Security  Measures:  RBAC,  AWS  Secrets  Manager  
+2.  Frontend  (Web  App)  
+●  Framework:  React.js  ●  UI  Library:  Tailwind  CSS  ●  State  Management:  Context  API  (or  Redux)  ●  Routing:  React  Router  
+3.  Deployment  &  Infrastructure  
+●  Hosting  Provider:  AWS  ●  Version  Control:  GitHub  ●  CI/CD  Pipeline:  GitHub  Actions  
+ 
+68  
+
+===== PAGE 69 =====
+ 
+Appendix  C:  Development  Methodology  
+The  development  process  followed  an  Agile  approach,  with  iterative  releases  and  
+continuous
+ 
+feedback.
+ 
+1.  Planning  Phase:  
+ ○  Defined  user  roles  (Organizer,  Participant).  ○  Identified  core  functionalities .  ○  Created  wireframes  for  UI  design.  2.  Development  Phase:  
+ ○  Implemented  backend  APIs  for  authentication,  event  management,  and  
+user
+ 
+roles.
+ ○  Built  a  responsive  UI  using  React.js  &  Tailwind  CSS.  ○  Integrated  frontend  with  backend  via  REST  APIs .  3.  Testing  &  Debugging:  
+ ○  Performed  unit  testing  for  API  endpoints.  ○  Conducted  UI  testing  for  responsive  behavior.  4.  Deployment  &  Hosting:  
+ ○  Deployed  backend  on  AWS  EC2  with  a  SQL  Server  database  on  RDS.  ○  Hosted  the  React  app  on  AWS  S3  +  CloudFront .  
+ 
+Appendix  D:  Security  Measures  
+1.  JWT  Authentication  
+ ○  Protects  API  endpoints  using  JWT  tokens .  ○  Implements  token  expiration  &  refresh  strategies.  2.  Role-Based  Access  Control  (RBAC)  
+ ○  Organizers  can  create  &  manage  events.  ○  Participants  can  view  &  RSVP  for  events.  3.  AWS  Secrets  Manager  
+ ○  Ensures  safe  storage  of  database  credentials  and  API  keys.  4.  Best  Practices  Implemented  
+ ○  HTTPS  enforcement  for  secure  connections.  ○  Input  validation  to  prevent  SQL  injection  &  XSS  attacks.  ○  Rate  limiting  for  API  protection.  
+69  
+
+===== PAGE 70 =====
+ 
+ 
+Appendix  E:  Cost  Estimation  
+Since  the  project  is  not  yet  live  and  only  uses  one  resource ,  costs  have  been  minimal  
+apart
+ 
+from
+ 
+AWS
+ 
+hosting
+.
+ 
+1.  Development  Effort:  
+ ○  Single  resource  (developer).  ○  Costs  are  limited  to  time  &  effort  spent.  2.  Cloud  Hosting  &  Storage:  
+ ○  AWS  EC2  (for  backend  API)  ○  AWS  RDS  (SQL  Server  database)  ○  AWS  S3  +  CloudFront  (for  frontend  web  app)  ○  Cost  estimation  based  on  AWS  Free  Tier  (for  now).  3.  Maintenance  &  Support:  
+ ○  Future  considerations:  bug  fixes,  feature  updates,  and  customer  
+support
+.
+ 
+ 
+Appendix  F:  Future  Enhancements  
+●  Live  Event  Streaming  using  AWS  Media  Services.  ●  Automated  Notifications  (Email  &  SMS  alerts).  ●  Admin  Dashboard  for  better  event  insights  &  analytics.  ●  Mobile  App  Integration  for  on-the-go  event  management.  
+ 
+ 
+ 
+ 
+ 
+70  
+
+===== PAGE 71 =====
+ 
+18.  Glossary  
+A  
+●  AWS  (Amazon  Web  Services):  A  cloud  computing  platform  providing  hosting,  
+databases,
+ 
+and
+ 
+security
+ 
+services
+ 
+for
+ 
+scalable
+ 
+applications.
+ ●  AWS  EC2  (Elastic  Compute  Cloud):  A  service  that  provides  virtual  servers  to  run  
+applications.
+ 
+Used
+ 
+for
+ 
+hosting
+ 
+our
+ 
+backend
+ 
+API.
+ ●  AWS  RDS  (Relational  Database  Service):  A  managed  database  service.  We  used  
+Microsoft
+ 
+SQL
+ 
+Server
+ 
+on
+ 
+RDS
+ 
+for
+ 
+secure
+ 
+data
+ 
+storage.
+ ●  AWS  S3  (Simple  Storage  Service):  A  scalable  storage  solution  used  for  hosting  the  
+frontend
+ 
+(React
+ 
+web
+ 
+app).
+ ●  AWS  CloudFront:  A  content  delivery  network  (CDN)  that  speeds  up  the  distribution  of  
+frontend
+ 
+assets
+ 
+globally.
+ ●  AWS  Secrets  Manager:  A  service  for  securely  storing  database  credentials  and  API  
+keys.
+ 
+ 
+B  
+●  Backend:  The  server-side  component  of  the  application,  responsible  for  handling  logic,  
+authentication,
+ 
+and
+ 
+database
+ 
+interactions.
+ ●  Bearer  Token:  A  method  of  authentication  using  a  token  (such  as  a  JWT)  included  in  
+API
+ 
+requests
+ 
+for
+ 
+security.
+ 
+ 
+C  
+●  CI/CD  (Continuous  Integration/Continuous  Deployment):  A  pipeline  that  automates  
+the
+ 
+building,
+ 
+testing,
+ 
+and
+ 
+deployment
+ 
+of
+ 
+the
+ 
+application
+ 
+using
+ 
+GitHub
+ 
+Actions.
+ ●  Cloud  Hosting:  Deploying  and  running  applications  on  cloud  infrastructure  instead  of  
+traditional
+ 
+on-premise
+ 
+servers.
+ ●  Cost  Estimation:  The  process  of  estimating  development,  hosting,  and  maintenance  
+costs
+ 
+for
+ 
+the
+ 
+application.
+ 
+ 
+D  
+●  Database:  A  structured  system  for  storing,  managing,  and  retrieving  data.  This  project  
+uses
+ 
+Microsoft
+ 
+SQL
+ 
+Server
+.
+ ●  Deployment:  The  process  of  making  an  application  live  and  accessible  to  users.  
+71  
+
+===== PAGE 72 =====
+ 
+ 
+E  
+●  Event  Management  System:  The  web  application  that  allows  organizers  to  create  and  
+manage
+ 
+events
+ 
+while
+ 
+participants
+ 
+can
+ 
+register
+ 
+and
+ 
+RSVP.
+ ●  Encryption:  The  process  of  converting  data  into  a  secure  format  to  prevent  
+unauthorized
+ 
+access.
+ ●  Endpoint:  A  specific  URL  in  an  API  that  allows  clients  to  send  requests  and  receive  
+responses.
+ 
+ 
+F  
+●  Frontend:  The  user-facing  part  of  the  application  developed  using  React.js .  ●  Full-Stack  Development:  The  practice  of  developing  both  frontend  and  backend  
+components
+ 
+of
+ 
+an
+ 
+application.
+ 
+ 
+G  
+●  GitHub:  A  platform  for  version  control  and  collaborative  development,  used  to  manage  
+our
+ 
+project
+ 
+repository.
+ ●  GitHub  Actions:  An  automation  tool  used  for  CI/CD  pipelines  in  this  project.  
+ 
+J  
+●  JWT  (JSON  Web  Token):  A  compact,  secure  method  for  transmitting  authentication  
+information
+ 
+between
+ 
+frontend
+ 
+and
+ 
+backend.
+ 
+ 
+M  
+●  Maintenance  &  Support:  Ongoing  work  required  to  keep  the  system  updated,  fix  bugs,  
+and
+ 
+provide
+ 
+technical
+ 
+assistance.
+ ●  Microsoft  SQL  Server:  The  database  management  system  used  in  our  project  to  store  
+event
+ 
+and
+ 
+user
+ 
+data.
+ 
+ 
+72  
+
+===== PAGE 73 =====
+ 
+R  
+●  React.js:  A  JavaScript  library  for  building  dynamic  user  interfaces,  used  for  the  frontend  
+of
+ 
+our
+ 
+application.
+ ●  REST  API  (Representational  State  Transfer  Application  Programming  Interface):  A  
+web
+ 
+service
+ 
+architecture
+ 
+that
+ 
+allows
+ 
+communication
+ 
+between
+ 
+the
+ 
+frontend
+ 
+and
+ 
+backend.
+ ●  RBAC  (Role-Based  Access  Control):  A  security  feature  that  grants  different  levels  of  
+access
+ 
+to
+ 
+organizers
+ 
+and
+ 
+participants
+ 
+based
+ 
+on
+ 
+user
+ 
+roles.
+ ●  RSVP  (Répondez  S'il  Vous  Plaît):  A  feature  that  allows  participants  to  confirm  their  
+attendance
+ 
+at
+ 
+an
+ 
+event.
+ 
+ 
+S  
+●  Scalability:  The  ability  of  the  system  to  handle  increased  loads,  such  as  more  users  and  
+events,
+ 
+without
+ 
+performance
+ 
+issues.
+ ●  Security  Measures:  The  techniques  implemented  to  protect  the  application  from  
+unauthorized
+ 
+access,
+ 
+including
+ 
+JWT
+ 
+authentication
+,
+ 
+RBAC
+,
+ 
+and
+ 
+AWS
+ 
+Secrets
+ 
+Manager
+.
+ ●  Server-Side  Rendering  (SSR):  A  rendering  technique  where  the  backend  generates  the  
+HTML
+ 
+before
+ 
+sending
+ 
+it
+ 
+to
+ 
+the
+ 
+client.
+ 
+ 
+T  
+●  Tailwind  CSS:  A  utility-first  CSS  framework  used  to  style  the  frontend  efficiently.  ●  Token-Based  Authentication:  A  method  of  verifying  user  identity  using  a  secure  token  
+like
+ 
+JWT
+.
+ 
+ 
+U  
+●  UI/UX  (User  Interface/User  Experience):  The  design  principles  that  ensure  a  smooth  
+and
+ 
+engaging
+ 
+user
+ 
+experience.
+ ●  User  Roles:  Different  levels  of  access  within  the  system,  including  Organizer  (who  
+manages
+ 
+events)
+ 
+and
+ 
+Participant
+ 
+(who
+ 
+registers
+ 
+for
+ 
+events).
+ 
+ 
+ 
+73  

@@ -1,0 +1,17 @@
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="shell footer-shell">
+        <p>Synopsis-priority delivery built with Java, JSP/Servlets, MySQL, HTML, CSS, and JavaScript.</p>
+        <p>Role-aware modules: properties, bookings, payments, admin approval, and reporting.</p>
+    </div>
+</footer>
+
+<script>
+window.APP_CONTEXT = "<%= contextPath %>";
+window.CSRF_TOKEN = "<%= csrfToken %>";
+</script>
+<script src="<%= contextPath %>/assets/js/app.js"></script>
+</body>
+</html>
