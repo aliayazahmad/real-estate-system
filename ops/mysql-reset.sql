@@ -1,4 +1,0 @@
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'RealEstateRoot#2026';
-CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED BY 'RealEstateRoot#2026';
-ALTER USER 'root'@'127.0.0.1' IDENTIFIED BY 'RealEstateRoot#2026';
-FLUSH PRIVILEGES;

@@ -1,4 +1,5 @@
 /target/
 /uploads/
 /runtime/
+ops/mysql-reset.sql
 docs/~$*.docx
