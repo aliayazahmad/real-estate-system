@@ -584,17 +584,6 @@ The verified workflow covered:
 - Screenshot 11: Admin Panel
 - Screenshot 12: Reports Page
 
-## Captured Screenshot Files
-
-The following screenshot assets were generated from the live application and are available in `docs/screenshots/`:
-
-- `01-home.png`
-- `02-login.png`
-- `03-register.png`
-- `04-properties.png`
-
-These can be inserted directly into the report document. The remaining authenticated screens can be captured after signing in with a customer, agent, or admin account.
-
 ## Suggested Caption Style
 
 - Figure 7: Home Page of Real Estate Property Listing and Booking System
