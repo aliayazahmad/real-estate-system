@@ -149,6 +149,24 @@ function ensure_schema(mysqli $connection, string $databaseName): void
     ensure_column($connection, $databaseName, 'properties', 'status', "ALTER TABLE properties ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending' AFTER image");
     ensure_column($connection, $databaseName, 'properties', 'created_at', 'ALTER TABLE properties ADD COLUMN created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP');
     ensure_column($connection, $databaseName, 'properties', 'updated_at', 'ALTER TABLE properties ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+    ensure_column_definition(
+        $connection,
+        $databaseName,
+        'properties',
+        'image',
+        'varchar',
+        'YES',
+        'ALTER TABLE properties MODIFY COLUMN image VARCHAR(255) NULL'
+    );
+    ensure_column_definition(
+        $connection,
+        $databaseName,
+        'properties',
+        'status',
+        'varchar',
+        'NO',
+        "ALTER TABLE properties MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending'"
+    );
 
     ensure_column($connection, $databaseName, 'bookings', 'booking_date', 'ALTER TABLE bookings ADD COLUMN booking_date DATE NULL AFTER property_id');
     ensure_column($connection, $databaseName, 'bookings', 'visit_date', 'ALTER TABLE bookings ADD COLUMN visit_date DATE NULL AFTER booking_date');
@@ -202,6 +220,33 @@ function ensure_index(mysqli $connection, string $databaseName, string $table, s
     $statement->close();
 
     if (!$exists) {
+        $connection->query($alterSql);
+    }
+}
+
+function ensure_column_definition(
+    mysqli $connection,
+    string $databaseName,
+    string $table,
+    string $column,
+    string $expectedDataType,
+    string $expectedNullable,
+    string $alterSql
+): void {
+    $statement = $connection->prepare(
+        'SELECT DATA_TYPE, IS_NULLABLE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?'
+    );
+    $statement->bind_param('sss', $databaseName, $table, $column);
+    $statement->execute();
+    $statement->bind_result($dataType, $isNullable);
+    $exists = $statement->fetch();
+    $statement->close();
+
+    if (!$exists) {
+        return;
+    }
+
+    if (strtolower((string) $dataType) !== strtolower($expectedDataType) || strtoupper((string) $isNullable) !== strtoupper($expectedNullable)) {
         $connection->query($alterSql);
     }
 }

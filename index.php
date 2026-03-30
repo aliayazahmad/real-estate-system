@@ -19,16 +19,16 @@ $featuredProperties = db_all(
      LIMIT 3"
 );
 
-render_page_start('Built for listings, bookings, approvals, and payments', 'Ship the core real-estate workflow from discovery to reporting in one place.');
+render_page_start('Built for listings, bookings, approvals, and payments', 'Manage the full real-estate workflow from discovery to payment in one place.');
 ?>
 
 <section class="hero-panel">
     <div class="hero-panel__copy">
-        <p class="eyebrow">IGNOU PROJECT READY MVP</p>
+        <p class="eyebrow">PROPERTY OPERATIONS PLATFORM</p>
         <h2>From manual property handling to a structured digital workflow.</h2>
         <p>
             Manage customer registration, agent listings, admin approvals, booking requests, payment records,
-            and reporting through a single PHP/MySQL application.
+            and analytics through a single PHP/MySQL platform.
         </p>
 
         <div class="action-row">

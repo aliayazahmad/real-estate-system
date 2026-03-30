@@ -5,15 +5,15 @@
 <%
 Map<String, Integer> stats = (Map<String, Integer>) request.getAttribute("stats");
 List<Property> featuredProperties = (List<Property>) request.getAttribute("featuredProperties");
-request.setAttribute("pageTitle", "Board Approved Real Estate System");
+request.setAttribute("pageTitle", "Real Estate System");
 %>
 <%@ include file="partials/header.jspf" %>
 
 <section class="hero-panel">
     <div class="hero-copy">
-        <span class="eyebrow">Synopsis-priority product build</span>
-        <h1>Manage property discovery, booking, payments, and approvals in one board-ready system.</h1>
-        <p>The approved stack is respected here: Java, JSP/Servlets, MySQL, and lightweight JavaScript for a smoother front-end workflow.</p>
+        <span class="eyebrow">Property Operations Platform</span>
+        <h1>Manage property discovery, booking, payments, and approvals in one streamlined system.</h1>
+        <p>Built with Java, JSP/Servlets, MySQL, and lightweight JavaScript for a smoother front-end workflow.</p>
         <div class="hero-actions">
             <a class="btn btn-primary" href="<%= contextPath %>/properties">Browse Properties</a>
             <% if (currentUser == null) { %>
@@ -30,7 +30,7 @@ request.setAttribute("pageTitle", "Board Approved Real Estate System");
             <li>Searchable property catalogue with approvals</li>
             <li>Booking workflow with status tracking</li>
             <li>Payment recording and invoice receipts</li>
-            <li>Admin reporting for board oversight</li>
+            <li>Admin analytics and operational oversight</li>
         </ul>
     </div>
 </section>

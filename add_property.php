@@ -73,7 +73,7 @@ if (is_post_request()) {
             $conn,
             'INSERT INTO properties (user_id, title, city, location, price, property_type, purpose, bedrooms, bathrooms, area_sqft, description, image, status)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            'isssdssiissss',
+            'isssdssiiisss',
             [
                 current_user()['id'],
                 $form['title'],
@@ -86,7 +86,7 @@ if (is_post_request()) {
                 $form['bathrooms'] !== '' ? (int) $form['bathrooms'] : null,
                 $form['area_sqft'] !== '' ? (int) $form['area_sqft'] : null,
                 $form['description'],
-                $image,
+                $image ?? '',
                 $status,
             ]
         );

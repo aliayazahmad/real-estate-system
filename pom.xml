@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.realestate</groupId>
-    <artifactId>board-approved-real-estate</artifactId>
+    <artifactId>real-estate-system</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
 
-    <name>Board Approved Real Estate System</name>
-    <description>Synopsis-priority Java/JSP/Servlet/MySQL implementation.</description>
+    <name>Real Estate System</name>
+    <description>Java/JSP/Servlet/MySQL implementation for property listing, booking, and administration.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,7 +34,7 @@
     </dependencies>
 
     <build>
-        <finalName>board-approved-real-estate</finalName>
+        <finalName>real-estate-system</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

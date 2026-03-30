@@ -15,7 +15,7 @@ request.setAttribute("pageTitle", "Register");
     <div class="auth-intro">
         <span class="eyebrow">Get started</span>
         <h1>Create a customer or agent account.</h1>
-        <p>The board-approved workflow uses role-based access so each user only sees the operations relevant to them.</p>
+        <p>Role-based access keeps the experience focused for customers, agents, and administrators.</p>
     </div>
     <div class="form-card">
         <h2>Register</h2>

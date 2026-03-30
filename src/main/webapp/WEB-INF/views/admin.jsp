@@ -19,7 +19,7 @@ request.setAttribute("pageTitle", "Admin Control Center");
     <div>
         <span class="eyebrow">Admin Center</span>
         <h1>Control approvals and monitor platform health</h1>
-        <p>The board-approved admin workspace centralizes listing review, booking movement, payment activity, and summary counts.</p>
+        <p>The admin workspace centralizes listing review, booking movement, payment activity, and key operational metrics.</p>
     </div>
     <a class="btn btn-primary" href="<%= contextPath %>/admin/reports">Open reports</a>
 </section>

@@ -42,8 +42,8 @@ request.setAttribute("pageTitle", "Reports & Analytics");
 <section class="section-head">
     <div>
         <span class="eyebrow">Reports</span>
-        <h1>Operational analytics for leadership review</h1>
-        <p>These summaries turn day-to-day system activity into a board-friendly overview of listings, bookings, and payment performance.</p>
+        <h1>Operational analytics for administrators</h1>
+        <p>These summaries turn day-to-day system activity into a clear view of listings, bookings, and payment performance.</p>
     </div>
     <div class="hero-actions">
         <a class="btn btn-secondary" href="<%= contextPath %>/admin">Back to admin</a>

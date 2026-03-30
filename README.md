@@ -1,8 +1,8 @@
 # Real Estate Hub
 
-This repository contains the approved Real Estate System aligned to the synopsis and the approved sample report.
+This repository contains the Real Estate System application, deployment assets, and supporting documentation.
 
-The board-approved stack is:
+The primary stack is:
 
 - Java
 - JSP / Servlets
@@ -29,8 +29,8 @@ Legacy PHP files remain in the repository from earlier work, but the Java/JSP/My
 - `src/main/webapp/WEB-INF/views` - JSP pages and shared partials
 - `src/main/webapp/assets` - CSS and JavaScript
 - `sql/schema.sql` - database schema
-- `docs/real-estate-project-report.md` - formal project report aligned to the approved sample
-- `docs/approved-sample.txt` - extracted text reference from the approved sample PDF
+- `docs/real-estate-project-report.md` - project documentation
+- `docs/approved-sample.txt` - reference notes extracted from the sample PDF
 - `pom.xml` - Maven WAR build configuration
 - `runtime/` - local runtime assets used during setup and deployment work
 
@@ -38,7 +38,7 @@ Legacy PHP files remain in the repository from earlier work, but the Java/JSP/My
 
 - Project report:
   [docs/real-estate-project-report.md](docs/real-estate-project-report.md)
-- Approved sample reference:
+- Reference notes:
   [docs/approved-sample.txt](docs/approved-sample.txt)
 
 ## Fast Start
@@ -57,7 +57,7 @@ Legacy PHP files remain in the repository from earlier work, but the Java/JSP/My
 mvn clean package
 ```
 
-5. Deploy `target/board-approved-real-estate.war` to Tomcat 8.5+.
+5. Deploy `target/real-estate-system.war` to Tomcat 8.5+ after building.
 6. Register an account and promote one user to `admin`:
 
 ```sql
@@ -76,6 +76,6 @@ UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';
 
 ## Current Status
 
-- The Java application source, SQL schema, Maven configuration, and submission report are present in the repository root.
-- The formal report draft has been prepared to match the approved sample structure.
+- The Java application source, SQL schema, Maven configuration, and documentation are present in the repository root.
+- The documentation set includes the current project write-up and reference notes.
 - Final database import, Tomcat deployment, and live browser verification still need to be completed on the local machine.
