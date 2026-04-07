@@ -3,86 +3,195 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/php/layout.php';
 
-$stats = [
-    'approved_properties' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM properties WHERE status = 'approved'") ?? 0),
-    'bookings' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM bookings') ?? 0),
-    'payments' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM payments WHERE status = 'paid'") ?? 0),
+$isLoggedIn = is_logged_in();
+$isAdmin = has_role('admin');
+$isAgent = has_role('agent');
+$isCustomer = has_role('customer');
+$user = current_user();
+
+$hero = [
+    'eyebrow' => 'REAL ESTATE HUB',
+    'title' => 'Discover verified listings and move from search to booking faster.',
+    'description' => 'Browse approved properties, compare prices, and keep your property decisions organized in one place.',
+    'primary' => ['label' => 'Browse Properties', 'href' => 'properties.php'],
+    'secondary' => ['label' => 'Create an Account', 'href' => 'register.php'],
+    'image_label' => 'Property search and ownership',
 ];
 
-$featuredProperties = db_all(
-    $conn,
-    "SELECT p.*, u.name AS owner_name
-     FROM properties p
-     LEFT JOIN users u ON u.id = p.user_id
-     WHERE p.status = 'approved'
-     ORDER BY p.created_at DESC, p.id DESC
-     LIMIT 3"
-);
+$section = [
+    'eyebrow' => 'LATEST APPROVED LISTINGS',
+    'title' => 'Featured Properties',
+    'button' => ['label' => 'View All', 'href' => 'properties.php'],
+    'empty_title' => 'No approved properties yet',
+    'empty_description' => 'Add a property as an agent or approve one as an admin to see it here.',
+];
 
-render_page_start('Built for listings, bookings, approvals, and payments', 'Manage the full real-estate workflow from discovery to payment in one place.');
+$stats = [];
+$featuredProperties = [];
+
+if ($isAdmin) {
+    $hero = [
+        'eyebrow' => 'ADMIN OVERVIEW',
+        'title' => 'Review approvals, booking activity, and payment health from one control point.',
+        'description' => 'Your homepage now prioritizes operational oversight so pending work is visible before you enter the dashboard.',
+        'primary' => ['label' => 'Open Dashboard', 'href' => 'admin_dashboard.php'],
+        'secondary' => ['label' => 'View Reports', 'href' => 'reports.php'],
+        'image_label' => 'Admin control and property approvals',
+    ];
+
+    $stats = [
+        'Pending Properties' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM properties WHERE status = 'pending'") ?? 0),
+        'Pending Bookings' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM bookings WHERE status = 'pending'") ?? 0),
+        'Paid Transactions' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM payments WHERE status = 'paid'") ?? 0),
+    ];
+
+    $featuredProperties = db_all(
+        $conn,
+        "SELECT p.*, u.name AS owner_name
+         FROM properties p
+         LEFT JOIN users u ON u.id = p.user_id
+         WHERE p.status = 'pending'
+         ORDER BY p.created_at DESC, p.id DESC
+         LIMIT 3"
+    );
+
+    $section = [
+        'eyebrow' => 'APPROVAL QUEUE',
+        'title' => 'Pending Property Reviews',
+        'button' => ['label' => 'Open Dashboard', 'href' => 'admin_dashboard.php'],
+        'empty_title' => 'No pending properties',
+        'empty_description' => 'New listings submitted by agents will appear here for review.',
+    ];
+} elseif ($isAgent) {
+    $hero = [
+        'eyebrow' => 'AGENT WORKSPACE',
+        'title' => 'Manage your listings, track responses, and keep your pipeline moving.',
+        'description' => 'Your homepage focuses on the properties you own, the bookings they attract, and the next action you should take.',
+        'primary' => ['label' => 'My Listings', 'href' => 'properties.php'],
+        'secondary' => ['label' => 'Add Property', 'href' => 'add_property.php'],
+        'image_label' => 'Agent listing management',
+    ];
+
+    $stats = [
+        'My Listings' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM properties WHERE user_id = ?', 'i', [$user['id']]) ?? 0),
+        'Pending Reviews' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM properties WHERE user_id = ? AND status = 'pending'", 'i', [$user['id']]) ?? 0),
+        'Booking Requests' => (int) (db_scalar(
+            $conn,
+            "SELECT COUNT(*)
+             FROM bookings b
+             INNER JOIN properties p ON p.id = b.property_id
+             WHERE p.user_id = ? AND b.status IN ('pending', 'confirmed')",
+            'i',
+            [$user['id']]
+        ) ?? 0),
+    ];
+
+    $featuredProperties = db_all(
+        $conn,
+        "SELECT p.*, u.name AS owner_name
+         FROM properties p
+         LEFT JOIN users u ON u.id = p.user_id
+         WHERE p.user_id = ?
+         ORDER BY p.created_at DESC, p.id DESC
+         LIMIT 3",
+        'i',
+        [$user['id']]
+    );
+
+    $section = [
+        'eyebrow' => 'YOUR INVENTORY',
+        'title' => 'Recent Listings',
+        'button' => ['label' => 'Open Dashboard', 'href' => 'dashboard.php'],
+        'empty_title' => 'No listings yet',
+        'empty_description' => 'Add your first property to start the review and booking flow.',
+    ];
+} elseif ($isCustomer) {
+    $hero = [
+        'eyebrow' => 'CUSTOMER SPACE',
+        'title' => 'Track your bookings and keep exploring approved homes with confidence.',
+        'description' => 'Your homepage now highlights your booking progress while keeping new approved listings easy to browse.',
+        'primary' => ['label' => 'Browse Properties', 'href' => 'properties.php'],
+        'secondary' => ['label' => 'My Bookings', 'href' => 'my_bookings.php'],
+        'image_label' => 'Customer property browsing and booking',
+    ];
+
+    $stats = [
+        'My Bookings' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM bookings WHERE user_id = ?', 'i', [$user['id']]) ?? 0),
+        'Confirmed Visits' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM bookings WHERE user_id = ? AND status = 'confirmed'", 'i', [$user['id']]) ?? 0),
+        'Paid Receipts' => (int) (db_scalar(
+            $conn,
+            "SELECT COUNT(*)
+             FROM bookings b
+             INNER JOIN payments pay ON pay.booking_id = b.id
+             WHERE b.user_id = ? AND pay.status = 'paid'",
+            'i',
+            [$user['id']]
+        ) ?? 0),
+    ];
+
+    $featuredProperties = db_all(
+        $conn,
+        "SELECT p.*, u.name AS owner_name
+         FROM properties p
+         LEFT JOIN users u ON u.id = p.user_id
+         WHERE p.status = 'approved'
+         ORDER BY p.created_at DESC, p.id DESC
+         LIMIT 3"
+    );
+} else {
+    $stats = [
+        'Approved Properties' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM properties WHERE status = 'approved'") ?? 0),
+        'Booking Records' => (int) (db_scalar($conn, 'SELECT COUNT(*) FROM bookings') ?? 0),
+        'Paid Transactions' => (int) (db_scalar($conn, "SELECT COUNT(*) FROM payments WHERE status = 'paid'") ?? 0),
+    ];
+
+    $featuredProperties = db_all(
+        $conn,
+        "SELECT p.*, u.name AS owner_name
+         FROM properties p
+         LEFT JOIN users u ON u.id = p.user_id
+         WHERE p.status = 'approved'
+         ORDER BY p.created_at DESC, p.id DESC
+         LIMIT 3"
+    );
+}
+
+render_page_start($isLoggedIn ? 'Welcome Back' : 'Welcome to Real Estate Hub');
 ?>
 
 <section class="hero-panel">
     <div class="hero-panel__copy">
-        <p class="eyebrow">PROPERTY OPERATIONS PLATFORM</p>
-        <h2>From manual property handling to a structured digital workflow.</h2>
-        <p>
-            Manage customer registration, agent listings, admin approvals, booking requests, payment records,
-            and analytics through a single PHP/MySQL platform.
-        </p>
+        <div class="action-row action-row--hero">
+            <a class="btn btn--hero-toggle is-active" href="<?php echo h($hero['primary']['href']); ?>"><?php echo h($hero['primary']['label']); ?></a>
+            <a class="btn btn--hero-toggle" href="<?php echo h($hero['secondary']['href']); ?>"><?php echo h($hero['secondary']['label']); ?></a>
+        </div>
 
-        <div class="action-row">
-            <a class="btn btn--primary" href="properties.php">Browse Properties</a>
-            <?php if (!is_logged_in()) { ?>
-                <a class="btn btn--ghost" href="register.php">Create an Account</a>
-            <?php } else { ?>
-                <a class="btn btn--ghost" href="<?php echo has_role('admin') ? 'admin_dashboard.php' : 'dashboard.php'; ?>">Open Dashboard</a>
-            <?php } ?>
+        <div class="hero-panel__image">
+            <img src="uploads/hero-home.jpg" alt="<?php echo h($hero['image_label']); ?>">
         </div>
     </div>
 
     <div class="hero-panel__stats">
-        <div class="stat-card">
-            <span class="stat-card__value"><?php echo $stats['approved_properties']; ?></span>
-            <span class="stat-card__label">Approved Properties</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-card__value"><?php echo $stats['bookings']; ?></span>
-            <span class="stat-card__label">Booking Records</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-card__value"><?php echo $stats['payments']; ?></span>
-            <span class="stat-card__label">Paid Transactions</span>
-        </div>
+        <?php foreach ($stats as $label => $value) { ?>
+            <div class="stat-card">
+                <span class="stat-card__value"><?php echo h((string) $value); ?></span>
+                <span class="stat-card__label"><?php echo h($label); ?></span>
+            </div>
+        <?php } ?>
     </div>
-</section>
-
-<section class="feature-grid">
-    <article class="feature-card">
-        <h3>Customer Experience</h3>
-        <p>Search listings with filters, request site visits, track booking status, and view payment receipts.</p>
-    </article>
-    <article class="feature-card">
-        <h3>Agent Operations</h3>
-        <p>Create property listings, upload images, maintain inventory, and monitor booking interest.</p>
-    </article>
-    <article class="feature-card">
-        <h3>Admin Control</h3>
-        <p>Approve or reject listings, confirm booking requests, review payments, and export reports.</p>
-    </article>
 </section>
 
 <section class="section-panel">
     <div class="section-heading">
         <div>
-            <p class="eyebrow">LATEST APPROVED LISTINGS</p>
-            <h2>Featured Properties</h2>
+            <p class="eyebrow"><?php echo h($section['eyebrow']); ?></p>
+            <h2><?php echo h($section['title']); ?></h2>
         </div>
-        <a class="btn btn--ghost" href="properties.php">View All</a>
+        <a class="btn btn--ghost" href="<?php echo h($section['button']['href']); ?>"><?php echo h($section['button']['label']); ?></a>
     </div>
 
     <?php if ($featuredProperties === []) { ?>
-        <?php render_empty_state('No approved properties yet', 'Add a property as an agent or approve one as an admin to see it here.'); ?>
+        <?php render_empty_state($section['empty_title'], $section['empty_description']); ?>
     <?php } else { ?>
         <div class="card-grid">
             <?php foreach ($featuredProperties as $property) { ?>

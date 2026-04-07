@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/php/layout.php';
 
-require_login();
+require_role('customer');
 
 if (is_post_request()) {
     verify_csrf();

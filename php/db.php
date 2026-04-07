@@ -186,8 +186,27 @@ function ensure_schema(mysqli $connection, string $databaseName): void
     ensure_index($connection, $databaseName, 'payments', 'uniq_payments_booking', 'ALTER TABLE payments ADD UNIQUE KEY uniq_payments_booking (booking_id)');
 
     $connection->query("UPDATE users SET role = 'customer' WHERE role = 'user' OR role = '' OR role IS NULL");
+    enforce_single_admin_role($connection);
     $connection->query("UPDATE properties SET status = 'approved' WHERE status = '' OR status IS NULL");
     $connection->query("UPDATE bookings SET status = 'pending' WHERE status = '' OR status IS NULL");
+}
+
+function enforce_single_admin_role(mysqli $connection): void
+{
+    $connection->query(
+        "UPDATE users
+         SET role = 'agent'
+         WHERE role = 'admin'
+           AND id NOT IN (
+               SELECT id FROM (
+                   SELECT id
+                   FROM users
+                   WHERE role = 'admin'
+                   ORDER BY id ASC
+                   LIMIT 1
+               ) AS primary_admin
+           )"
+    );
 }
 
 function ensure_column(mysqli $connection, string $databaseName, string $table, string $column, string $alterSql): void

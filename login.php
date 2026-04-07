@@ -37,7 +37,7 @@ if (is_post_request()) {
     }
 }
 
-render_page_start('Login', 'Access the customer, agent, or admin workspace.');
+render_page_start('Login');
 ?>
 
 <section class="form-shell">

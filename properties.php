@@ -16,6 +16,8 @@ $filters = [
 $propertyTypes = ['apartment', 'house', 'villa', 'plot', 'commercial'];
 $purposes = ['sale', 'rent'];
 $statuses = ['pending', 'approved', 'booked', 'rejected'];
+$isAdmin = has_role('admin');
+$isAgent = has_role('agent');
 
 $sql = "
     SELECT p.*, u.name AS owner_name, u.email AS owner_email
@@ -26,16 +28,24 @@ $sql = "
 $params = [];
 $types = '';
 
-if (has_role('admin')) {
+$citySql = "SELECT DISTINCT city FROM properties WHERE city IS NOT NULL AND city <> ''";
+$cityParams = [];
+$cityTypes = '';
+
+if ($isAdmin) {
     if ($filters['status'] !== '' && in_array($filters['status'], $statuses, true)) {
         $sql .= ' AND p.status = ?';
         $types .= 's';
         $params[] = $filters['status'];
     }
-} elseif (has_role('agent')) {
-    $sql .= " AND (p.status = 'approved' OR p.user_id = ?)";
+} elseif ($isAgent) {
+    $sql .= ' AND p.user_id = ?';
     $types .= 'i';
     $params[] = current_user()['id'];
+
+    $citySql .= ' AND user_id = ?';
+    $cityTypes .= 'i';
+    $cityParams[] = current_user()['id'];
 
     if ($filters['status'] !== '' && in_array($filters['status'], $statuses, true)) {
         $sql .= ' AND p.status = ?';
@@ -44,6 +54,7 @@ if (has_role('admin')) {
     }
 } else {
     $sql .= " AND p.status = 'approved'";
+    $citySql .= " AND status = 'approved'";
 }
 
 if ($filters['q'] !== '') {
@@ -97,27 +108,44 @@ $sql .= " ORDER BY
     p.created_at DESC,
     p.id DESC";
 
-$properties = db_all($conn, $sql, $types, $params);
-$cities = db_all($conn, "SELECT DISTINCT city FROM properties WHERE city IS NOT NULL AND city <> '' ORDER BY city ASC");
+$citySql .= ' ORDER BY city ASC';
 
-render_page_start('Property Catalogue', 'Filter listings by city, purpose, price, or type and follow approval status in one view.');
+$properties = db_all($conn, $sql, $types, $params);
+$cities = db_all($conn, $citySql, $cityTypes, $cityParams);
+
+$pageTitle = $isAgent ? 'My Listings' : 'Property Catalogue';
+$pageDescription = '';
+$filterTitle = $isAgent ? 'Filter Your Listings' : 'Search the Inventory';
+$searchPlaceholder = $isAgent ? 'Title, city, description' : 'Title, city, location';
+$activeFilterCount = count(array_filter($filters, static fn ($value) => $value !== ''));
+
+render_page_start($pageTitle, $pageDescription);
 ?>
 
 <section class="section-panel">
-    <div class="section-heading">
+    <div class="section-heading section-heading--filters">
         <div>
             <p class="eyebrow">SMART FILTERS</p>
-            <h2>Search the Inventory</h2>
+            <h2><?php echo h($filterTitle); ?></h2>
+            <p class="section-subcopy">
+                <?php echo h($isAgent ? 'This page shows only your own listings.' : 'Use a few focused filters to narrow the catalogue quickly.'); ?>
+            </p>
         </div>
-        <?php if (has_role(['agent', 'admin'])) { ?>
-            <a class="btn btn--primary" href="add_property.php">Add Property</a>
-        <?php } ?>
+
+        <div class="filter-toolbar">
+            <?php if ($activeFilterCount > 0) { ?>
+                <span class="badge badge--primary"><?php echo h((string) $activeFilterCount); ?> active</span>
+            <?php } ?>
+            <?php if (has_role(['agent', 'admin'])) { ?>
+                <a class="btn btn--primary" href="add_property.php">Add Property</a>
+            <?php } ?>
+        </div>
     </div>
 
-    <form method="GET" class="filters-grid">
-        <label class="field">
+    <form method="GET" class="filters-grid filters-grid--catalogue">
+        <label class="field field--search">
             <span>Search</span>
-            <input type="text" name="q" value="<?php echo h($filters['q']); ?>" placeholder="Title, city, location">
+            <input type="text" name="q" value="<?php echo h($filters['q']); ?>" placeholder="<?php echo h($searchPlaceholder); ?>">
         </label>
 
         <label class="field">
@@ -180,7 +208,7 @@ render_page_start('Property Catalogue', 'Filter listings by city, purpose, price
             </label>
         <?php } ?>
 
-        <div class="form-actions">
+        <div class="form-actions form-actions--filters">
             <button class="btn btn--primary" type="submit">Apply Filters</button>
             <a class="btn btn--ghost" href="properties.php">Reset</a>
         </div>
@@ -188,14 +216,17 @@ render_page_start('Property Catalogue', 'Filter listings by city, purpose, price
 </section>
 
 <?php if ($properties === []) { ?>
-    <?php render_empty_state('No properties matched your search', 'Try broadening the filters or add a new property as an agent.'); ?>
+    <?php render_empty_state('No properties matched your search', ''); ?>
 <?php } else { ?>
     <section class="card-grid">
         <?php foreach ($properties as $property) { ?>
             <?php
             $isOwner = is_logged_in() && (int) ($property['user_id'] ?? 0) === (int) current_user()['id'];
+            $city = trim((string) ($property['city'] ?? ''));
+            $location = trim((string) ($property['location'] ?? ''));
             $description = trim((string) ($property['description'] ?? ''));
             $summary = $description !== '' ? (strlen($description) > 135 ? substr($description, 0, 132) . '...' : $description) : 'Property details are available for this listing.';
+            $showLocation = $location !== '' && strcasecmp($location, $city) !== 0;
             ?>
             <article class="card">
                 <?php if (!empty($property['image'])) { ?>
@@ -213,8 +244,22 @@ render_page_start('Property Catalogue', 'Filter listings by city, purpose, price
                     </div>
 
                     <h3><?php echo h($property['title']); ?></h3>
-                    <p class="card__location"><?php echo h(trim(($property['city'] ? $property['city'] . ', ' : '') . $property['location'], ', ')); ?></p>
-                    <p class="card__copy"><?php echo h($summary); ?></p>
+                    <?php if ($city !== '') { ?>
+                        <p class="card__detail">
+                            <span class="card__detail-label">City:</span>
+                            <?php echo h($city); ?>
+                        </p>
+                    <?php } ?>
+                    <?php if ($showLocation) { ?>
+                        <p class="card__detail">
+                            <span class="card__detail-label">Location:</span>
+                            <?php echo h($location); ?>
+                        </p>
+                    <?php } ?>
+                    <p class="card__detail card__copy">
+                        <span class="card__detail-label">Description:</span>
+                        <?php echo h($summary); ?>
+                    </p>
 
                     <div class="spec-row">
                         <span><?php echo h(ucfirst((string) $property['property_type'])); ?></span>
@@ -225,29 +270,29 @@ render_page_start('Property Catalogue', 'Filter listings by city, purpose, price
                     </div>
 
                     <p class="card__support">
-                        Listed by <?php echo h($property['owner_name'] ?: 'Real Estate Hub'); ?>
-                        <?php if (has_role('admin')) { ?>
+                        Listed by <?php echo h($isOwner ? 'You' : ($property['owner_name'] ?: 'Real Estate Hub')); ?>
+                        <?php if ($isAdmin) { ?>
                             <br>Email: <?php echo h($property['owner_email'] ?: 'N/A'); ?>
                         <?php } ?>
                     </p>
 
-                    <div class="card__actions">
-                        <?php if (!is_logged_in()) { ?>
-                            <a class="btn btn--primary" href="login.php">Login to Book</a>
-                        <?php } elseif (has_role('customer') && $property['status'] === 'approved' && !$isOwner) { ?>
-                            <a class="btn btn--primary" href="book.php?property_id=<?php echo h((string) $property['id']); ?>">Request Booking</a>
-                        <?php } elseif (has_role(['agent', 'admin']) && (has_role('admin') || $isOwner)) { ?>
-                            <a class="btn btn--ghost" href="edit_property.php?id=<?php echo h((string) $property['id']); ?>">Edit</a>
+                    <?php if (!is_logged_in() || (has_role('customer') && $property['status'] === 'approved' && !$isOwner) || (has_role(['agent', 'admin']) && ($isAdmin || $isOwner))) { ?>
+                        <div class="card__actions">
+                            <?php if (!is_logged_in()) { ?>
+                                <a class="btn btn--primary" href="login.php">Login to Book</a>
+                            <?php } elseif (has_role('customer') && $property['status'] === 'approved' && !$isOwner) { ?>
+                                <a class="btn btn--primary" href="book.php?property_id=<?php echo h((string) $property['id']); ?>">Request Booking</a>
+                            <?php } elseif (has_role(['agent', 'admin']) && ($isAdmin || $isOwner)) { ?>
+                                <a class="btn btn--ghost" href="edit_property.php?id=<?php echo h((string) $property['id']); ?>">Edit</a>
 
-                            <form method="POST" action="delete.php">
-                                <?php echo csrf_field(); ?>
-                                <input type="hidden" name="id" value="<?php echo h((string) $property['id']); ?>">
-                                <button class="btn btn--danger" type="submit" data-confirm="Delete this property listing?">Delete</button>
-                            </form>
-                        <?php } else { ?>
-                            <span class="badge badge--muted">Read only</span>
-                        <?php } ?>
-                    </div>
+                                <form method="POST" action="delete.php">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="id" value="<?php echo h((string) $property['id']); ?>">
+                                    <button class="btn btn--danger" type="submit" data-confirm="Delete this property listing?">Delete</button>
+                                </form>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
                 </div>
             </article>
         <?php } ?>

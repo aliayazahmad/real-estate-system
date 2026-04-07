@@ -74,24 +74,32 @@ function normalize_role(string $role): string
     return $role ?: 'customer';
 }
 
-function login_user(array $user): void
+function build_auth_user(array $user): array
 {
-    session_regenerate_id(true);
-
-    $authUser = [
+    return [
         'id' => (int) ($user['id'] ?? 0),
         'name' => (string) ($user['name'] ?? ''),
         'email' => (string) ($user['email'] ?? ''),
         'phone' => (string) ($user['phone'] ?? ''),
         'role' => normalize_role((string) ($user['role'] ?? 'customer')),
     ];
+}
 
+function persist_auth_user(array $authUser): void
+{
     $_SESSION['auth_user'] = $authUser;
     $_SESSION['user_id'] = $authUser['id'];
     $_SESSION['user_name'] = $authUser['name'];
     $_SESSION['user_email'] = $authUser['email'];
     $_SESSION['role'] = $authUser['role'];
     $_SESSION['is_admin'] = $authUser['role'] === 'admin' ? 1 : 0;
+}
+
+function login_user(array $user): void
+{
+    session_regenerate_id(true);
+
+    persist_auth_user(build_auth_user($user));
 }
 
 function logout_user(): void
@@ -118,16 +126,40 @@ function logout_user(): void
 function current_user(): ?array
 {
     if (!isset($_SESSION['auth_user']) && isset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['role'])) {
-        $_SESSION['auth_user'] = [
+        persist_auth_user([
             'id' => (int) $_SESSION['user_id'],
             'name' => (string) $_SESSION['user_name'],
             'email' => (string) ($_SESSION['user_email'] ?? ''),
             'phone' => '',
             'role' => normalize_role((string) $_SESSION['role']),
-        ];
+        ]);
     }
 
-    return $_SESSION['auth_user'] ?? null;
+    $user = $_SESSION['auth_user'] ?? null;
+
+    if ($user === null) {
+        return null;
+    }
+
+    global $conn;
+
+    $freshUser = db_one(
+        $conn,
+        'SELECT id, name, email, phone, role FROM users WHERE id = ? LIMIT 1',
+        'i',
+        [(int) ($user['id'] ?? 0)]
+    );
+
+    if ($freshUser) {
+        $authUser = build_auth_user($freshUser);
+
+        if ($authUser !== $user) {
+            persist_auth_user($authUser);
+            $user = $authUser;
+        }
+    }
+
+    return $user;
 }
 
 function is_logged_in(): bool
@@ -235,9 +267,36 @@ function is_positive_amount(string $value): bool
     return is_numeric($value) && (float) $value > 0;
 }
 
+function indian_number_format(int $value): string
+{
+    $digits = (string) $value;
+
+    if (strlen($digits) <= 3) {
+        return $digits;
+    }
+
+    $lastThree = substr($digits, -3);
+    $remaining = substr($digits, 0, -3);
+    $parts = [];
+
+    while (strlen($remaining) > 2) {
+        array_unshift($parts, substr($remaining, -2));
+        $remaining = substr($remaining, 0, -2);
+    }
+
+    if ($remaining !== '') {
+        array_unshift($parts, $remaining);
+    }
+
+    return implode(',', $parts) . ',' . $lastThree;
+}
+
 function currency($value): string
 {
-    return '&#8377;' . number_format((float) $value, 2);
+    $rounded = (int) round((float) $value);
+    $sign = $rounded < 0 ? '-' : '';
+
+    return $sign . '&#8377;' . indian_number_format(abs($rounded));
 }
 
 function format_date(?string $value, string $fallback = 'Not scheduled'): string

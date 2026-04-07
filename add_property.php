@@ -96,7 +96,7 @@ if (is_post_request()) {
     }
 }
 
-render_page_start('Add Property', 'Capture listing details, media, and specifications for review.');
+render_page_start('Add Property');
 ?>
 
 <section class="form-shell">

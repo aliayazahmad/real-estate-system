@@ -14,7 +14,8 @@ if ($export !== '') {
             'headers' => ['Title', 'City', 'Location', 'Type', 'Purpose', 'Price', 'Status', 'Owner', 'Created At'],
             'rows' => db_all(
                 $conn,
-                "SELECT p.title, p.city, p.location, p.property_type, p.purpose, p.price, p.status, u.name AS owner_name, p.created_at
+                "SELECT p.title, p.city, p.location, p.property_type, p.purpose, p.price, p.status,
+                        COALESCE(u.name, 'Unknown Owner') AS owner_name, p.created_at
                  FROM properties p
                  LEFT JOIN users u ON u.id = p.user_id
                  ORDER BY p.created_at DESC, p.id DESC"
@@ -25,10 +26,12 @@ if ($export !== '') {
             'headers' => ['Customer', 'Property', 'Booking Date', 'Visit Date', 'Status', 'Message'],
             'rows' => db_all(
                 $conn,
-                "SELECT u.name AS customer_name, p.title, b.booking_date, b.visit_date, b.status, b.message
+                "SELECT COALESCE(u.name, 'Unknown Customer') AS customer_name,
+                        COALESCE(p.title, 'Missing Property') AS title,
+                        b.booking_date, b.visit_date, b.status, b.message
                  FROM bookings b
-                 INNER JOIN users u ON u.id = b.user_id
-                 INNER JOIN properties p ON p.id = b.property_id
+                 LEFT JOIN users u ON u.id = b.user_id
+                 LEFT JOIN properties p ON p.id = b.property_id
                  ORDER BY b.created_at DESC, b.id DESC"
             ),
         ],
@@ -37,11 +40,14 @@ if ($export !== '') {
             'headers' => ['Invoice', 'Customer', 'Property', 'Amount', 'Method', 'Reference', 'Status', 'Paid On'],
             'rows' => db_all(
                 $conn,
-                "SELECT pay.invoice_number, u.name AS customer_name, p.title, pay.amount, pay.payment_method, pay.transaction_ref, pay.status, pay.payment_date
+                "SELECT pay.invoice_number,
+                        COALESCE(u.name, 'Unknown Customer') AS customer_name,
+                        COALESCE(p.title, 'Missing Property') AS title,
+                        pay.amount, pay.payment_method, pay.transaction_ref, pay.status, pay.payment_date
                  FROM payments pay
-                 INNER JOIN bookings b ON b.id = pay.booking_id
-                 INNER JOIN users u ON u.id = b.user_id
-                 INNER JOIN properties p ON p.id = b.property_id
+                 LEFT JOIN bookings b ON b.id = pay.booking_id
+                 LEFT JOIN users u ON u.id = b.user_id
+                 LEFT JOIN properties p ON p.id = b.property_id
                  ORDER BY pay.payment_date DESC, pay.id DESC"
             ),
         ],
@@ -70,6 +76,8 @@ require_once __DIR__ . '/php/layout.php';
 
 $propertyBreakdown = db_all($conn, 'SELECT status, COUNT(*) AS total FROM properties GROUP BY status ORDER BY total DESC');
 $bookingBreakdown = db_all($conn, 'SELECT status, COUNT(*) AS total FROM bookings GROUP BY status ORDER BY total DESC');
+$propertyRecordCount = (int) (db_scalar($conn, 'SELECT COUNT(*) FROM properties') ?? 0);
+$bookingRecordCount = (int) (db_scalar($conn, 'SELECT COUNT(*) FROM bookings') ?? 0);
 $topCities = db_all(
     $conn,
     "SELECT city, COUNT(*) AS total
@@ -84,18 +92,18 @@ $totalRevenue = (float) (db_scalar($conn, "SELECT COALESCE(SUM(amount), 0) FROM 
 render_page_start('Reports', 'Export inventory, bookings, and payment records while monitoring status breakdowns.');
 ?>
 
-<section class="stats-grid stats-grid--wide">
+<section class="stats-grid">
     <article class="stat-card">
-        <span class="stat-card__value"><?php echo currency($totalRevenue); ?></span>
+        <span class="stat-card__value stat-card__value--currency"><?php echo currency($totalRevenue); ?></span>
         <span class="stat-card__label">Total Recorded Revenue</span>
     </article>
     <article class="stat-card">
-        <span class="stat-card__value"><?php echo h((string) count($propertyBreakdown)); ?></span>
-        <span class="stat-card__label">Property Status Buckets</span>
+        <span class="stat-card__value"><?php echo h((string) $propertyRecordCount); ?></span>
+        <span class="stat-card__label">Property Records</span>
     </article>
     <article class="stat-card">
-        <span class="stat-card__value"><?php echo h((string) count($bookingBreakdown)); ?></span>
-        <span class="stat-card__label">Booking Status Buckets</span>
+        <span class="stat-card__value"><?php echo h((string) $bookingRecordCount); ?></span>
+        <span class="stat-card__label">Booking Records</span>
     </article>
 </section>
 
@@ -109,8 +117,8 @@ render_page_start('Reports', 'Export inventory, bookings, and payment records wh
 
     <div class="action-row">
         <a class="btn btn--primary" href="reports.php?export=properties">Export Properties CSV</a>
-        <a class="btn btn--ghost" href="reports.php?export=bookings">Export Bookings CSV</a>
-        <a class="btn btn--ghost" href="reports.php?export=payments">Export Payments CSV</a>
+        <a class="btn btn--primary" href="reports.php?export=bookings">Export Bookings CSV</a>
+        <a class="btn btn--primary" href="reports.php?export=payments">Export Payments CSV</a>
     </div>
 </section>
 

@@ -103,7 +103,7 @@ render_page_start('Profile', 'Update your contact details and account security s
 
             <label class="field">
                 <span>Role</span>
-                <input type="text" value="<?php echo h(ucfirst((string) $user['role'])); ?>" readonly>
+                <input type="text" value="<?php echo h(ucfirst((string) current_user()['role'])); ?>" readonly>
             </label>
 
             <label class="field">

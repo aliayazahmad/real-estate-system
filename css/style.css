@@ -216,10 +216,30 @@ small {
     margin-top: 12px;
 }
 
-.hero-panel__copy p:last-of-type {
-    color: var(--muted);
+.hero-panel__copy {
+    display: grid;
+    align-content: start;
+}
+
+.hero-panel__lead {
     margin-top: 16px;
+    color: var(--muted);
     max-width: 640px;
+}
+
+.hero-panel__image {
+    margin-top: 24px;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow);
+}
+
+.hero-panel__image img {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
 }
 
 .hero-panel__stats {
@@ -278,6 +298,12 @@ small {
     font-size: clamp(1.8rem, 3vw, 2.8rem);
     font-weight: 700;
     margin-bottom: 4px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.stat-card__value--currency {
+    font-size: clamp(1.6rem, 2.3vw, 2.6rem);
 }
 
 .stat-card__label {
@@ -304,6 +330,23 @@ small {
     font-size: clamp(1.4rem, 2.5vw, 2.1rem);
 }
 
+.section-heading--filters {
+    align-items: end;
+}
+
+.section-subcopy {
+    margin-top: 10px;
+    color: var(--muted);
+    max-width: 620px;
+}
+
+.filter-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .action-row,
 .inline-actions,
 .card__actions,
@@ -315,6 +358,16 @@ small {
 
 .action-row {
     margin-top: 24px;
+}
+
+.action-row--hero {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .btn {
@@ -346,6 +399,32 @@ small {
     color: var(--ink);
     background: #fff;
     box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.1);
+}
+
+.btn--hero-toggle {
+    min-width: 210px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+        inset 0 0 0 1px rgba(31, 41, 51, 0.1),
+        0 10px 24px rgba(31, 41, 51, 0.08);
+}
+
+.btn--hero-toggle.is-active,
+.btn--hero-toggle:hover,
+.btn--hero-toggle:focus-visible {
+    color: #fff;
+    background: linear-gradient(135deg, var(--brand), var(--brand-deep));
+    box-shadow: 0 14px 28px rgba(15, 118, 110, 0.2);
+}
+
+.action-row--hero:has(.btn--hero-toggle:not(.is-active):hover) .btn--hero-toggle.is-active,
+.action-row--hero:has(.btn--hero-toggle:not(.is-active):focus-visible) .btn--hero-toggle.is-active {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+        inset 0 0 0 1px rgba(31, 41, 51, 0.1),
+        0 10px 24px rgba(31, 41, 51, 0.08);
 }
 
 .btn--danger {
@@ -408,6 +487,16 @@ small {
 .card__copy,
 .card__support {
     color: var(--muted);
+}
+
+.card__detail {
+    color: var(--muted);
+}
+
+.card__detail-label {
+    color: var(--ink);
+    font-weight: 700;
+    margin-right: 6px;
 }
 
 .spec-row {
@@ -495,6 +584,23 @@ small {
 
 .filters-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.filters-grid--catalogue {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 252, 251, 0.95));
+    border: 1px solid rgba(15, 118, 110, 0.1);
+}
+
+.filters-grid--catalogue .field--search {
+    grid-column: span 2;
+}
+
+.form-actions--filters {
+    align-items: end;
+    padding-top: 30px;
 }
 
 .field {
@@ -714,6 +820,15 @@ textarea {
 
     .btn {
         width: 100%;
+    }
+
+    .action-row--hero {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn--hero-toggle {
+        min-width: 0;
     }
 
     .card__actions,

@@ -93,7 +93,7 @@ $recentPayments = db_all(
      LIMIT 8"
 );
 
-render_page_start('Admin Dashboard', 'Review pending approvals, booking requests, revenue records, and system health in one place.');
+render_page_start('Admin Dashboard');
 ?>
 
 <section class="stats-grid stats-grid--wide">
@@ -115,7 +115,7 @@ render_page_start('Admin Dashboard', 'Review pending approvals, booking requests
     </div>
 
     <?php if ($pendingProperties === []) { ?>
-        <?php render_empty_state('No pending properties', 'Agents have no listings waiting for approval right now.'); ?>
+        <?php render_empty_state('No pending properties', ''); ?>
     <?php } else { ?>
         <div class="card-grid">
             <?php foreach ($pendingProperties as $property) { ?>
@@ -222,7 +222,7 @@ render_page_start('Admin Dashboard', 'Review pending approvals, booking requests
     </div>
 
     <?php if ($recentPayments === []) { ?>
-        <?php render_empty_state('No payment records yet', 'Once customers complete payments, invoice records will appear here.'); ?>
+        <?php render_empty_state('No payment records yet', ''); ?>
     <?php } else { ?>
         <div class="table-shell">
             <table class="data-table">

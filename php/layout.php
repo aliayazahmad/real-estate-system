@@ -19,11 +19,14 @@ function nav_items(): array
 
     $items[] = ['label' => 'Dashboard', 'href' => current_role() === 'admin' ? 'admin_dashboard.php' : 'dashboard.php'];
 
-    if (has_role(['agent', 'admin'])) {
+    if (has_role('agent')) {
         $items[] = ['label' => 'Add Property', 'href' => 'add_property.php'];
     }
 
-    $items[] = ['label' => 'My Bookings', 'href' => 'my_bookings.php'];
+    if (has_role('customer')) {
+        $items[] = ['label' => 'My Bookings', 'href' => 'my_bookings.php'];
+    }
+
     $items[] = ['label' => 'Profile', 'href' => 'profile.php'];
 
     if (has_role('admin')) {
@@ -39,6 +42,8 @@ function render_page_start(string $title, string $description = ''): void
 {
     $flash = pull_flash();
     $currentScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
+    $styleVersion = (string) (@filemtime(dirname(__DIR__) . '/css/style.css') ?: '1');
+    $scriptVersion = (string) (@filemtime(dirname(__DIR__) . '/js/script.js') ?: '1');
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,8 +51,8 @@ function render_page_start(string $title, string $description = ''): void
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title . ' | ' . app_name()); ?></title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/script.js" defer></script>
+    <link rel="stylesheet" href="css/style.css?v=<?php echo h($styleVersion); ?>">
+    <script src="js/script.js?v=<?php echo h($scriptVersion); ?>" defer></script>
 </head>
 <body>
 <header class="site-header">
@@ -114,7 +119,9 @@ function render_empty_state(string $title, string $description, string $actionLa
     ?>
     <section class="empty-state">
         <h2><?php echo h($title); ?></h2>
-        <p><?php echo h($description); ?></p>
+        <?php if ($description !== '') { ?>
+            <p><?php echo h($description); ?></p>
+        <?php } ?>
         <?php if ($actionLabel !== '' && $actionHref !== '') { ?>
             <a class="btn btn--primary" href="<?php echo h($actionHref); ?>"><?php echo h($actionLabel); ?></a>
         <?php } ?>
